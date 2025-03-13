@@ -1,0 +1,40 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build (tsc)",
+            "type": "shell",
+            "command": "npm run build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "detail": "Build the typescript project"
+        },
+        {
+            "label": "Install",
+            "type": "shell",
+            "command": "npm run build && ./install.sh && sudo hb-service restart",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "detail": "Instrall the dist folder and others to var lib homebridge"
+        },
+        {
+            "label": "npm lint",
+            "type": "shell",
+            "command": "npm",
+            "args": [
+              "run",
+              "lint"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Run npm run lint"
+        }
+    ]
+}
+  

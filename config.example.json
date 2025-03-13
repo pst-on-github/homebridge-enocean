@@ -1,0 +1,23 @@
+{
+    "accessories": [
+        {
+            "eep": "A5-02-05",
+            "id": "05:06:06:B2",
+            "name": "Blume",
+            "manufacturer": "EnOcean GmbH",
+            "model": "STM33X"
+        },
+        {
+            "eep": "F6-02-01",
+            "id": "FE:F9:34:D4",
+            "name": "Rocker",
+            "manufacturer": "EnOcean GmbH",
+            "model": "PTM 215"
+        }
+    ],
+    "name": "EnOcean",
+    "comDevice": "/dev/serial/by-id/usb-EnOcean_GmbH_EnOcean_USB_300_DB_FTO8VWK-if00-port0",
+    "isLearnSwitchEnabled": true,
+    "isHistoryServiceEnabled": true,
+    "platform": "EnOcean"
+}

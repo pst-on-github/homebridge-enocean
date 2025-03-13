@@ -1,0 +1,54 @@
+{
+    "name": "homebridge-enocean",
+    "displayName": "Homebridge EnOcean",
+    "version": "1.0.0-beta.1",
+    "private": true,
+    "description": "Connects some EnOcean devices to homebridge.",
+    "author": "pst-on-github",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/pst-on-github/homebridge-enocean#readme",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pst-on-github/homebridge-enocean.git"
+    },
+    "bugs": {
+        "url": "https://github.com/pst-on-github/homebridge-enocean/issues"
+    },
+    "keywords": [
+        "homebridge-plugin",
+        "enocean"
+    ],
+    "main": "dist/index.js",
+    "engines": {
+        "node": "^18.20.4 || ^20.18.0 || ^22.10.0",
+        "homebridge": "^1.8.0 || ^2.0.0-beta.0"
+    },
+    "scripts": {
+        "build": "rimraf ./dist && tsc",
+        "lint": "eslint . --max-warnings=0",
+        "test": "jest"
+    },
+    "jest": {
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "testMatch": [
+            "**/_tests/**/*.test.ts"
+        ],
+        "collectCoverage": true,
+        "coverageDirectory": "coverage"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.19.0",
+        "@types/jest": "^29.5.14",
+        "@types/node": "^22.10.5",
+        "eslint": "^9.19.0",
+        "homebridge": "^2.0.0-beta.0",
+        "rimraf": "^6.0.1",
+        "ts-jest": "^29.2.5",
+        "typescript-eslint": "^8.23.0"
+    },
+    "dependencies": {
+        "enocean-core": "^0.8.3",
+        "fakegato-history": "^0.6.5"
+    }
+}

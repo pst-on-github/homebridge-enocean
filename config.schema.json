@@ -1,0 +1,84 @@
+{
+    "pluginAlias": "EnOcean",
+    "pluginType": "platform",
+    "singular": true,
+    "strictValidation": false,
+    "schema": {
+        "type": "object",
+        "properties": {
+            "accessories": {
+                "items": {
+                    "properties": {
+                        "eep": {
+                            "required": true,
+                            "title": "EEP",
+                            "type": "string"
+                        },
+                        "id": {
+                            "required": true,
+                            "title": "EnOcean ID",
+                            "type": "string"
+                        },
+                        "name": {
+                            "required": true,
+                            "title": "Display Name",
+                            "type": "string"
+                        },
+                        "manufacturer": {
+                            "required": false,
+                            "title": "Manufacturer Name",
+                            "type": "string"
+                        },
+                        "model": {
+                            "required": false,
+                            "title": "Device Model",
+                            "type": "string"
+                        },
+                        "time": {
+                            "required": false,
+                            "title": "Time [s]",
+                            "type": "number",
+                            "description": "<ul><li>Window Covering: the travel time of the blinds in seconds.</li><li>Contact Sensor: this time the contact is open before the status tampered is active.</li></ul>No effect on other accessories."
+                        }
+                    },
+                    "type": "object"
+                },
+                "title": "EnOcean Devices",
+                "description": "List of EnOcean devices to add as accessories.",
+                "type": "array"
+            },
+            "name": {
+                "title": "Platform Name",
+                "description": "Name of the platform.",
+                "default": "EnOcean",
+                "type": "string",
+                "required": true
+            },
+            "comDevice": {
+                "title": "EnOcean device path",
+                "description": "Path to the EnOcean device.",
+                "type": "string",
+                "required": true,
+                "typeahead": {
+                    "source": [
+                        "/dev/ttyUSB0",
+                        "/dev/ttyUSB1",
+                        "/dev/serial/by-id/usb-EnOcean_GmbH_EnOcean_USB_300_DB_FTO8VWK-if00-port0"
+                    ]
+                }
+            },
+            "isLearnSwitchEnabled": {
+                "title": "Learn Switch",
+                "description": "If enabled, the plugin will create a switch accessory (EnOcean Learn) to switch learn/teach-in mode.",
+                "default": true,
+                "type": "boolean"
+            },
+            "isHistoryServiceEnabled": {
+                "title": "Enable History Service for Eve App",
+                "description": "If enabled, the plugin support the fakegato-history service to support history graphs in the Eve app.",
+                "default": true,
+                "type": "boolean"
+            }
+        }
+    }
+}
