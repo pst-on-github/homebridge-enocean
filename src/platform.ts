@@ -167,6 +167,12 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         continue;
       }
       const uuid = this.api.hap.uuid.generate(devConfig.devId.toString());
+
+      if (this.configuredDevicesByUUID.has(uuid)) {
+        this.log.warn(`${devConfig.name}: Skipping device. Duplicate EnOID: ${devConfig.devId}`);
+        continue;
+      } 
+
       this.configuredDevicesByUUID.set(uuid, devConfig);
     }
 
