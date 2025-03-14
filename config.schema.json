@@ -38,6 +38,7 @@
                             "required": false,
                             "title": "Time [s]",
                             "type": "number",
+                            "placeholder": "",
                             "description": "<ul><li>Window Covering: the travel time of the blinds in seconds.</li><li>Contact Sensor: this time the contact is open before the status tampered is active.</li></ul>No effect on other accessories."
                         }
                     },
