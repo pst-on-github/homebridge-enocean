@@ -10,6 +10,7 @@ import { MotionSensorAccessory } from './MotionSensorAccessory';
 import { WindowCoveringAccessory } from './WindowCoveringAccessory';
 import { EnoAccessoryContext } from '../homebridge/EnoAccessoryContext';
 import { ContactSensorAccessory } from './ContactSensorAccessory';
+import { LeakSensorAccessory } from './LeakSensorAccessory';
 
 type AccessoryClassType = {
   new(
@@ -27,6 +28,7 @@ export class AccessoryFactory {
     this.registerClass('A5-02', TemperatureSensorAccessory);
     this.registerClass('A5-04', TemperatureSensorAccessory);
     this.registerClass('A5-08', MotionSensorAccessory);
+    this.registerClass('A5-10', LeakSensorAccessory);
     this.registerClass('A5-14', ContactSensorAccessory);
 
     this.registerClass('A5-38-08', OutletAccessory);

@@ -2,6 +2,7 @@ import { EepParser } from './EepParser';
 import { EepParser_A5_02 } from './EepParser_A5_02';
 import { EepParser_A5_04 } from './EepParser_A5_04';
 import { EepParser_A5_08 } from './EepParser_A5_08';
+import { EepParser_A5_10 } from './EepParser_A5_10';
 import { EepParser_A5_14 } from './EepParser_A5_14';
 import { EepParser_A5_30 } from './EepParser_A5_30';
 import { EepParser_A5_38_08 } from './EepParser_A5_38_08';
@@ -24,6 +25,7 @@ export class EepParserFactory {
     this.registerClass('F6-01', EepParser_F6);
     this.registerClass('F6-02', EepParser_F6);
 
+    this.registerClass('A5-10', EepParser_A5_10);
     this.registerClass('A5-30', EepParser_A5_30);
     this.registerClass('A5-38-08', EepParser_A5_38_08);
     this.registerClass('A5-3F-7F', EepParser_A5_3F_7F_Eltako);
