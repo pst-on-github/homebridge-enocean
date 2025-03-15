@@ -35,6 +35,14 @@ export class AccessoryFactory {
     this.registerClass('A5-3F-7F', WindowCoveringAccessory);
 
     this.registerClass('D2-05-00', WindowCoveringAccessory);
+
+    this.registerClass('contactSensor', ContactSensorAccessory); 
+    this.registerClass('leakSensor', LeakSensorAccessory);
+    this.registerClass('motionSensor', MotionSensorAccessory);
+    this.registerClass('outlet', OutletAccessory);
+    this.registerClass('statelessProgrammableSwitch', StatelessProgrammableSwitchAccessory);
+    this.registerClass('temperatureSensor', TemperatureSensorAccessory);
+    this.registerClass('windowCovering', WindowCoveringAccessory);
   }
 
   private registerClass(id: string, classRef: AccessoryClassType): void {
@@ -49,23 +57,29 @@ export class AccessoryFactory {
 
   ): IEnoAccessory {
 
-    let classRef = this.classMap.get(eep);
+    let classRef = undefined;
 
-    if (!classRef) {
-      classRef = this.classMap.get(eep.substring(0, 5));
+    if (config.accessoryKind !== undefined && config.accessoryKind.toLowerCase() !== 'auto') {
+      classRef = this.classMap.get(config.accessoryKind);
+
+      if (classRef === undefined) {
+        throw new Error(`New accessory: ${config.accessoryKind}: Accessory kind not supported`);
+      }
+    }  else {
+
+      classRef = this.classMap.get(eep);
+
+      if (!classRef) {
+        classRef = this.classMap.get(eep.substring(0, 5));
+      }
+
+      if (!classRef) {
+        classRef = this.classMap.get(eep.substring(0, 2));
+      }
     }
 
     if (!classRef) {
-      classRef = this.classMap.get(eep.substring(0, 2));
-    }
-
-    // TODO
-    if (/contact/i.test(config.model)) {
-      classRef = ContactSensorAccessory;
-    }
-
-    if (!classRef) {
-      throw new Error(`${eep}: EEP not supported`);
+      throw new Error(`New accessory: ${eep}: EEP not supported`);
     }
 
     return new classRef(platform, accessory, config);

@@ -6,27 +6,22 @@
     "schema": {
         "type": "object",
         "properties": {
-            "accessories": {
+            "devices": {
                 "items": {
                     "properties": {
-                        "eep": {
-                            "required": true,
-                            "title": "EEP",
-                            "type": "string"
-                        },
-                        "id": {
-                            "required": true,
-                            "title": "EnOcean ID",
-                            "type": "string"
-                        },
                         "name": {
                             "required": true,
                             "title": "Display Name",
                             "type": "string"
                         },
-                        "manufacturer": {
-                            "required": false,
-                            "title": "Manufacturer Name",
+                        "id": {
+                        "required": true,
+                        "title": "EnOcean ID",
+                            "type": "string"
+                        },
+                        "eep": {
+                            "required": true,
+                            "title": "EEP",
                             "type": "string"
                         },
                         "model": {
@@ -34,12 +29,35 @@
                             "title": "Device Model",
                             "type": "string"
                         },
+                        "manufacturer": {
+                        "required": false,
+                        "title": "Manufacturer Name",
+                        "type": "string"
+                        },
                         "time": {
                             "required": false,
                             "title": "Time [s]",
                             "type": "number",
                             "placeholder": "",
                             "description": "<ul><li>Window Covering: the travel time of the blinds in seconds.</li><li>Contact Sensor: this time the contact is open before the status tampered is active.</li></ul>No effect on other accessories."
+                        },
+                        "accessoryKind": {
+                            "required": false,
+                            "title": "Accessory Kind Override",
+                            "type": "string",
+                            "default": "Auto (from EEP)",
+                            "oneOf":[
+                                {  "title": "Auto (from EEP)", "enum": ["auto"] },
+                                {  "title": "Contact Sensor", "enum": ["contactSensor"] },
+                                {  "title": "Leak Sensor", "enum": ["leakSensor"] },
+                                {  "title": "Motion Sensor", "enum": ["motionSensor"] },
+                                {  "title": "Outlet", "enum": ["outlet"] },
+                                {  "title": "Stateless Programmable Switch", "enum": ["statelessProgrammableSwitch"] },
+                                {  "title": "Switch", "enum": ["switch"] },
+                                {  "title": "Temperature Sensor", "enum": ["temperatureSensor"] },
+                                {  "title": "Window Covering", "enum": ["windowCovering"] }
+                            ],
+                            "description": "Allows to override tha accessory type. Useful for e.g. RORG F6 (RPS) telegrams when they should be contact sensors but this cannot be known from the EEP."
                         }
                     },
                     "type": "object"

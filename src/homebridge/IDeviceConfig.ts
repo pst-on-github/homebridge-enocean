@@ -16,4 +16,9 @@ export interface IDeviceConfig {
    * Contact Sensor:            The time the contact stays open before Characteristic.StatusTampered.TAMPERED will be set.
    */
   time?: number;
+
+  /**
+   * Optionally override the accessory kind for the device.
+   */
+  accessoryKind?: string;
 }

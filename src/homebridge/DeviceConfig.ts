@@ -16,6 +16,7 @@ export class DeviceConfig implements IDeviceConfig {
   public name: string;
 
   public time?: number;
+  public accessoryKind?: string;
 
   private static manufacturerFromString(value: string): number {
     if (value === undefined) {

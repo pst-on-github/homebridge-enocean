@@ -156,12 +156,13 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       cached.delete(learnSwitchAccessory.UUID);
     }
 
-    // Validate configured accessories
-    for (const a of this.config.accessories) {
+    // Validate configured devices
+    for (const a of this.config.devices) {
       let devConfig;
       try {
         devConfig = new DeviceConfig(a.id, a.eep, a.name, a.manufacturer, a.model);
         devConfig.time = a.time;
+        devConfig.accessoryKind = a.accessoryKind;
       } catch (error) {
         this.log.warn(`${a.name}: Skipping device. Wrong configuration. Check EnOID and EEP. ${error}`);
         continue;
@@ -248,7 +249,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         await device.setGateway(this._enoGateway);
 
         this.api.updatePlatformAccessories([cachedAccessory]);
-        this.log.success(`${cachedAccessory.displayName}: updated accessory from cache`);
+        this.log.success(`${cachedAccessory.displayName} (${device.constructor.name}): updated accessory from cache`);
         this.discoveredAccessoriesByUUID.set(uuid, device);
       } catch (error) {
         this.log.warn(`${cachedAccessory.displayName}: failed to update cached accessory. ${error}`);
@@ -263,7 +264,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
 
         await device.setGateway(this._enoGateway);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-        this.log.success(`${accessory.displayName}: registered new accessory`);
+        this.log.success(`${accessory.displayName} (${device.constructor.name}): registered new accessory`);
         this.discoveredAccessoriesByUUID.set(deviceConfig.devId.toString(), device);
       } catch (error) {
         this.log.warn(`${deviceConfig.name}: failed to create accessory. ${error}`);
@@ -283,7 +284,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         const device = this.enoAccessoryFactory.newAccessory(deviceConfig.eep, this, accessory, deviceConfig);
         await device.setGateway(this._enoGateway);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-        this.log.success(`${accessory.displayName}: registered new accessory by ${teachInMethod}`);
+        this.log.success(`${accessory.displayName} (${device.constructor.name}): registered new accessory by ${teachInMethod}`);
         this.discoveredAccessoriesByUUID.set(uuid, device);
 
         const configUpdater = new HbConfigUpdater(this.api.user.configPath(), PLATFORM_NAME);
@@ -298,7 +299,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
 
       deviceConfig = this._enoGateway.armedConfig;
       if (deviceConfig === undefined) {
-        throw new Error('deviceConfig is undefined');
+        throw new Error('Attempt to teach-in a new Eltako device but deviceConfig is undefined');
       }
 
       const id = Util.getTimeAsFourDigitString();
@@ -312,7 +313,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
         await device.setGateway(this._enoGateway);
-        this.log.success(`${accessory.displayName}: registered new accessory by Eltako MSC`);
+        this.log.success(`${accessory.displayName} (${device.constructor.name}): registered new accessory by Eltako MSC`);
         this.discoveredAccessoriesByUUID.set(uuid, device);
 
         const configUpdater = new HbConfigUpdater(this.api.user.configPath(), PLATFORM_NAME);
