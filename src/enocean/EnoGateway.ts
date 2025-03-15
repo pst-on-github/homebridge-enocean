@@ -281,7 +281,18 @@ export class EnoGateway {
     }
   }
 
-  public armedConfig: DeviceConfig | undefined;
+  /**
+   * Return the last configuration found with and MCS telegram.
+   * Once this has been read, it will be reset to undefined.
+   */
+  public get armedConfig(): DeviceConfig | undefined{
+    const config = this._armedConfig;
+    this._armedConfig = undefined;
+    return config;
+  }
+  
+  private _armedConfig: DeviceConfig | undefined;
+  
   private readonly mscParser = new EepParser_D1_Eltako();
 
   private async coreGateway_receivedErp1Telegram(telegram: EnOCore.ERP1Telegram): Promise<void> {
@@ -299,7 +310,7 @@ export class EnoGateway {
         if (info === undefined) {
           // Teach in this new device. Provide the full config for platform
           this.log.info(`Adding '${telegram.sender}' to configuration via 4BS teach-in`);
-          this.armedConfig = mscMessage.values.msc.config;
+          this._armedConfig = mscMessage.values.msc.config;
           await this.teachDevice(mscMessage.values.msc.config);
         } else {
           // Device already known
