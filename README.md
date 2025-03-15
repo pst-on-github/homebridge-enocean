@@ -64,7 +64,7 @@ four stateless programmable switches. The single, double and long press events a
 1. Activate the *EnOcean Learn* accessory.
 2. Just press the one of the rockers. There is no specific learn message.
 
-### Outlets F6-02xx/A5-38-08
+### Outlets F6-02-xx/A5-38-08
 
 They can be controlled either using F6 (button) or A5-38-08 (Gateway, General Command, Switching) profile. Depending on the EEP this plugin will send according messages.
 
@@ -76,7 +76,22 @@ Some kind of aut-create is not jet implemented.
 
 #### Eltako FSSA-230V
 
-No advantage using the A5 EEP as it does not automatically enable acknowledge telegrams from the socket.
+1. Configuring the FSSA in homebridge
+
+    1. To figure out the EnoID turn on the confirmation telegrams at the FSSA and activate the *EnOcean Learn* accessory. Monitor the homebridge log while switching the FSSA using the right button, note the EnOID.
+
+    2. Manually create a device in the homebridge configuration using the EnOID and EEP `A5-38-08` or `F6-02-01`. Reboot homebridge. The FSSA should now appear as accessory in homebridge.
+
+2. Teach-in homebridge to the FSSA
+
+    1. Set the FSSA to learn mode (left button 1 s, right button 2 times)
+    2. Activate the *EnOcean Learn* accessory.
+    3. Click the FSSA accessory. This will send a teach-in message to the FSSA. 
+    4. Torn off the *EnOcean Learn* accessory.
+    5. Verify switching the FSSA from homebridge.
+    6. Verify confirmation telegrams are working by switching the FSSA using the right button.
+
+Note: No advantage using the A5 EEP as it does not automatically enable acknowledge telegrams from the socket. They need to be enabled manually.
 
 #### Eltake FSLA-230V 
 
