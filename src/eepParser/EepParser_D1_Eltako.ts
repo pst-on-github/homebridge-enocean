@@ -38,28 +38,11 @@ export class EepParser_D1_Eltako extends EepParser {
     // The 3E8 (TF61L) replies with 4BS '9E2D0708'-'00' which is the D3-D1 = <localId>
     // w/o the highest octet 'FF' and D0 = 08 = data message (no teach-in but data)
 
-    // RX: 05: 0C: 0E: C5 MSC(ELTAKO)
-    
-    /* FHEM
-    my %EnO_mscRefID = (
-      "0000041A" => {model => "Eltako_FUD61", teachIn => "E0400D80", version => "0103", attr => {eep => "J5.38.08"}}, DIM
-      "0000041B" => {model => "Eltako_FUD61", teachIn => "E0400D80", version => "0102", attr => {eep => "J5.38.08"}},
-      "00000492" => {model => "Eltako_FUD61", teachIn => "E0400D80", version => "0204", attr => {eep => "J5.38.08"}},
-      "00000493" => {model => "Eltako_FUD61", teachIn => "E0400D80", version => "0203", attr => {eep => "J5.38.08"}},
-      "000004D0" => {model => "Eltako_FUD61", teachIn => "E0400D80", version => "0304", attr => {eep => "J5.38.08"}},
-      "000004DD" => {model => "Eltako_FUD61", teachIn => "E0400D80", version => "0303", attr => {eep => "J5.38.08"}},
-      "0000045C" => {model => "Eltako_F4CT55", version => "0101", attr => {eep => "G6.02.01"}},
-      "0000043E" => {model => "Eltako_FRM60", teachIn => "FFF80D80", version => "0100", attr => {eep => "I5.3F.7F"}} Rolladenmotor
-    );
-
-00D0FF000003EC
-
-    */
-
+    // They all use the teach-in telegram 'E0400D80' to be send to them
     '000003E8': { model: 'TF61L-230V', eep: 'A5-38-08' },   // Light (gateway)
     '000003EC': { model: 'TF61J-230V', eep: 'A5-3F-7F' },   // Blinds
     '00000402': { model: 'TF61J-230V', eep: 'A5-3F-7F' },   // Blinds
-    '00000414': { model: 'TF100L', eep: 'A5-38-08' },       // Socket/Light (gateway)
+    '00000414': { model: 'TF100L', eep: 'A5-38-08' },       // Socket/Light (gateway), not all TF100L support 4BS teach-in
     '00000429': { model: 'FLD61', eep: 'A5-3F-7F' },        // LED PWM DIM
     '0000046F': { model: 'FJ62NP-230V', eep: 'A5-3F-7F' },  // Blinds
   };
