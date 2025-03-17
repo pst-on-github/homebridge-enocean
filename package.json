@@ -1,15 +1,15 @@
 {
-    "name": "homebridge-enocean",
+    "name": "@pst-on-npm/homebridge-enocean",
     "displayName": "Homebridge EnOcean",
     "version": "1.0.0-beta.1",
-    "private": true,
-    "description": "Connects some EnOcean devices to homebridge.",
+    "private": false,
+    "description": "Connects EnOcean devices to homebridge.",
     "author": "pst-on-github",
     "license": "Apache-2.0",
     "homepage": "https://github.com/pst-on-github/homebridge-enocean#readme",
     "repository": {
         "type": "git",
-        "url": "https://github.com/pst-on-github/homebridge-enocean.git"
+        "url": "git+https://github.com/pst-on-github/homebridge-enocean.git"
     },
     "bugs": {
         "url": "https://github.com/pst-on-github/homebridge-enocean/issues"

@@ -6,4 +6,4 @@ export const PLATFORM_NAME = 'EnOcean';
 /**
  * This must match the name of your plugin as defined the package.json `name` property
  */
-export const PLUGIN_NAME = 'homebridge-enocean';
+export const PLUGIN_NAME = '@pst-on-npm/homebridge-enocean';
