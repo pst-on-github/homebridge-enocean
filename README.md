@@ -8,6 +8,36 @@
 
 Integrate EnOcean devices into Homebridge. Still *beta*!
 
+## Supported EEPs
+
+The plugin assigns accessories depending on the EEP. This can be overwritten in the config. Might be useful for contacts.
+
+EEP | Accessory | EEP types
+-|-|-
+A5-02 | Temperature Sensors |  01 to 1B and 20 and 30
+A5-04 | Temperature Sensors |  01 and 02
+A5-08 | Motion Sensors |  01, 02 and 03
+A5-10 | Leak Sensor | 0B - Temperature Sensor and Single Input Contact
+A5-14 | Contact Sensor | 09 - Window/Door-Sensor with States Open/Closed/Tilt, Supply voltage monitor
+A5-30 | Contact Sensor | Digital Input 
+A5-38-08 | Outlet | Central Command, Gateway type 08 is supported
+A5-3F-7F Eltako | Window Covering | 7F Eltako specific
+D1-Eltako | none | Used for auto teach-in with Eltako devices
+D2-05.ts | Window Covering | 00 (not fully test)
+F6 | Switches | Programmable switch | various
+
+Some accessories support multiple services. History service is provided by the fakegato module.
+
+Accessories | Services and Characteristics (main service first)
+-|-
+Contact Sensor | ContactSensor, Battery, History 
+Leak Sensor | LeakSensor, TemperatureSensor, Battery, History
+Motion Sensor | MotionSensor, Battery, LightSensor, History
+Outlet | Outlet
+ProgrammableSwitch | StatelessProgrammableSwitch
+Temperature Sensor | TemperatureSensor, HumiditySensor, Battery, History
+Window Covering | WindowCovering 
+
 ## Platform configuration
 
 Property | Description
@@ -26,55 +56,38 @@ id | The EnOcean device ID. An eight digit hex number separated by a colon ':'. 
 name | The name of the device. This will be the initial name when the device appears in homebridge.
 manufacturer | The name of the manufacturer of this device. Some manufacturers (like Eltako) support special features.
 model | The name of the model.
+time | See description in the UI
+accessoryKind | Allows to override the created accessory. By default (auto) it is  determined by the EEP.
 
-## Supported devices
+## Teach-in
 
-In order to teach-in new device some steps are necessary. The *Learn Switch* accessory hat
-two functions if activated.
+In order to teach-in (learn) new devices a *Learn Switch* accessory is provides.
 
-1. It enables the plug-in to listen for teach-in messages (4BS only actually). Could be considered inbound.
-2. It enabled transmission of teach-in messages when a manually configured accessory is activated (i.e. switched on). That could be considered outbound.
+1. It enables the plug-in to listen to teach-in messages. They are written to the logs.
+2. It enabled transmission of teach-in messages when a manually configured accessory is activated (i.e. switched on). 
 
-Currently supported EnOcean Devices are:
+### Auto create 
 
-### Temperature sensors EEP A5-02-xx
+Sone devices send an indication of their EEP and manufacturer if they are placed into teach-in mode. If possible they are automatically created and added to the configuration.
 
-They just provide the temperature. Types (EEP) 0x01 to 0x1B and 0x20 and 0x30 are supported.
-Tested with an STM3xx module (type 0x05). This EEP will always result in an accessory with a
-primary Temperature Sensor Service.
+### Manual teach-in
 
-1. Activate the *EnOcean Learn* accessory.
-2. Command the device to transmit a learning message.
-
-### Temperature and humidity sensors EEP A5-04-xx
-
-Provides temperature and relative humidity. Type 0x01 and 0x02 are supported. Tested with Eltako FAFT60.
-This EEP will always result in an accessory with a primary Temperature Sensor Service and a Humidity Service.
-For Eltako model a Battery Service is supported as well.
+#### Devices with a teach button (unidirectional sensors):
 
 1. Activate the *EnOcean Learn* accessory.
 2. Command the device to transmit a learning message.
 
-### Stateless Programmable Switches EEP F6-02-xx
+#### Switches
 
-They come with 2 rocker switches for the supported types 0x01 and 0x02. The four buttons will end up as
-four stateless programmable switches. The single, double and long press events are supported
-(not sure whether the double press makes sens though, it also delays the single press detection). 
+Configure them manually. Turn on the *EnOcean Learn* accessory to capture the EnOID from the logs.
 
-1. Activate the *EnOcean Learn* accessory.
-2. Just press the one of the rockers. There is no specific learn message.
+They come with 2 rocker switches for the supported types 0x01 and 0x02. The four buttons will end up as four stateless programmable switches. The single, double and long press events are supported (not sure whether the double press makes sens though, it also delays the single press detection). 
 
-### Outlets F6-02-xx/A5-38-08
+#### Outlet actors F6-02-xx/A5-38-08
 
-They can be controlled either using F6 (button) or A5-38-08 (Gateway, General Command, Switching) profile. Depending on the EEP this plugin will send according messages.
+Some of them support auto create when they are set to learn mode.
 
-Some kind of aut-create is not jet implemented.
-
-1. Set the outlet to learn mode
-2. Activate the *EnOcean Learn* accessory
-2. Click the socket accessory in Homebridge button once. This will send the learn telegram to the socket, depending on the EEP of the accessory (F6/A5).
-
-#### Eltako FSSA-230V
+##### Eltako FSSA-230V
 
 1. Configuring the FSSA in homebridge
 
@@ -96,10 +109,6 @@ Note: No advantage using the A5 EEP as it does not automatically enable acknowle
 #### Eltake FSLA-230V 
 
 Using the A5 EEP automatically enabled the acknowledge telegrams from the socket.
-
-## Unfinished stuff
-
-* The learn mode (teach-in) can be activated by the build-in Learn Mode Switch Accessory and it will print teach-in telegrams in the logs. It will not yet change the json config file.
 
 ## Technical details
 
