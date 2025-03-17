@@ -35,8 +35,6 @@ export class EepParser_A5_38_08 extends EepParser {
     }
   }
 
-  // TODO FOURBS '9E2D0508'-'00'  EepParser_A5_38_08-08 ELTAKO
-
   parse(telegram: EnoCore.ERP1Telegram): ParsedMessage {
 
     const eep = super.parseBase(telegram);

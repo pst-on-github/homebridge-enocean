@@ -75,7 +75,6 @@ export class MotionSensorAccessory extends EnoAccessory implements IEnoAccessory
 
     const ct = this._service.getCharacteristic(this.hap.Characteristic.MotionDetected);
     ct.onGet(async (): Promise<CharacteristicValue> => this.getProperty(this._isMotionDetected));
-    // TODO ct.setProps({ minValue: 18, maxValue: 30, minStep: 1 });
 
     this._batteryService = new BatteryServiceHelper(platform, accessory);
 

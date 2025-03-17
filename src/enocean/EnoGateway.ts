@@ -252,7 +252,7 @@ export class EnoGateway {
     }
   }
 
-  private get coreGateway(): EnOCore.Gateway {  // TODO make private
+  private get coreGateway(): EnOCore.Gateway {
     if (this._coreGateway === undefined) {
       throw 'coreGateway not initialized. Call start() before accessing this property.';
     }

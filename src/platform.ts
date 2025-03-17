@@ -144,8 +144,6 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
    */
   private async discoverDevices(): Promise<void> {
 
-    // TODO add duplicate ID check
-
     await this._enoGateway.start();
 
     const cached = new Map(this.cachedAccessoriesByUUID); // Assume all orphans
