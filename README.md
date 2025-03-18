@@ -47,6 +47,10 @@ comDevice | Path to the EnOcean device. E.g. `/dev/ttyUSB0`. USB300 type EnOcean
 isLearnSwitchEnabled | Learn Switch. If enabled, the plugin will create a switch accessory (EnOcean Learn) to switch learn/teach-in mode.
 isHistoryServiceEnabled | Enable History Service for Eve App. If enabled, the plugin support the fakegato-history service to support history graphs in the Eve app. 
 
+Maybe it is a good idea to use the is-path for `comDevice`, like `/dev/serial/usb-EnOcean_GmbH_EnOcean_USB_300_DB_<some-id>-if00-port0`. That way homebridge can access the device if you plug it to another USB port.
+
+If you see 'access denied' in the logs, for the com device, you might need to add homebridge to the plogdev group (`adduser homebridge plugdev` on raspian).
+
 ## EnOceanDevice configuration
 
 Property | Description
