@@ -35,8 +35,8 @@ export class HbConfigUpdater {
     if (plugin === undefined) {
       throw new Error('EnOcean: no such platform in config');
     }
-    if (plugin.accessories === undefined) {
-      plugin.accessories = [];
+    if (plugin.devices === undefined) {
+      plugin.devices = [];
     };
 
     const newEntry: IDeviceConfig = {
@@ -46,7 +46,7 @@ export class HbConfigUpdater {
       model: newItem.model,
       manufacturer: newItem.manufacturer,
     };
-    plugin.accessories.push(newEntry);
+    plugin.devices.push(newEntry);
   
     this.writeJsonFile(config);
   }

@@ -22,7 +22,7 @@ describe('ConfigWriter', () => {
       platforms: [
         {
           platform: 'EnOcean',
-          accessories: [],
+          devices: [],
         },
       ],
     };
@@ -46,7 +46,7 @@ describe('ConfigWriter', () => {
         platforms: [
           {
             platform: 'EnOcean',
-            accessories: [newDevice],
+            devices: [newDevice],
           },
         ],
       }, null, 2),
@@ -59,7 +59,7 @@ describe('ConfigWriter', () => {
       platforms: [
         {
           platform: 'OtherPlatform',
-          accessories: [],
+          devices: [],
         },
       ],
     };
@@ -79,7 +79,7 @@ describe('ConfigWriter', () => {
     }).toThrow('EnOcean: no such platform in config');
   });
 
-  it('should initialize accessories array if it is undefined', () => {
+  it('should initialize devices array if it is undefined', () => {
     const mockConfig = {
       platforms: [
         {
@@ -107,7 +107,7 @@ describe('ConfigWriter', () => {
         platforms: [
           {
             platform: 'EnOcean',
-            accessories: [newDevice],
+            devices: [newDevice],
           },
         ],
       }, null, 2),
@@ -115,12 +115,12 @@ describe('ConfigWriter', () => {
     );
   });
 
-  it('should add a new device to an existing accessories array', () => {
+  it('should add a new device to an existing devices array', () => {
     const mockConfig = {
       platforms: [
         {
           platform: 'EnOcean',
-          accessories: [
+          devices: [
             {
               id: 'existingDevice',
               eep: 'a5-02-05',
@@ -152,7 +152,7 @@ describe('ConfigWriter', () => {
         platforms: [
           {
             platform: 'EnOcean',
-            accessories: [
+            devices: [
               {
                 id: 'existingDevice',
                 eep: 'a5-02-05',
