@@ -93,14 +93,14 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
 
     // Allocate new or persisted sender ID
 
-    this.accessory.context.deviceSenderIndex = gateway
-      .claimSenderIndex(this.accessory.context.deviceSenderIndex);
+    this.accessory.context.localSenderIndex = gateway
+      .claimSenderIndex(this.accessory.context.localSenderIndex);
 
-    if (this.accessory.context.deviceSenderIndex === undefined) {
+    if (this.accessory.context.localSenderIndex === undefined) {
       this.platform.log.warn('Failed to claim individual sender id. The limit of 128 might be exceeded.');
     }
 
-    this._senderId = gateway.getSenderId(this.accessory.context.deviceSenderIndex!);
+    this._senderId = gateway.getSenderId(this.accessory.context.localSenderIndex!);
     this.platform.log.info(`${this.accessory.displayName}: assigned sender EnOID ${this._senderId?.toString()}`);
   }
 

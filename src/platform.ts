@@ -161,6 +161,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         devConfig = new DeviceConfig(a.id, a.eep, a.name, a.manufacturer, a.model);
         devConfig.time = a.time;
         devConfig.accessoryKind = a.accessoryKind;
+        devConfig.localSenderIndex = a.localSenderIndex;
       } catch (error) {
         this.log.warn(`${a.name}: Skipping device. Wrong configuration. Check EnOID and EEP. ${error}`);
         continue;
@@ -256,6 +257,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       // Create new accessory
       const accessory = new this.api.platformAccessory<EnoAccessoryContext>(deviceConfig.name, uuid);
       accessory.context = accessory.context ?? new EnoAccessoryContext();
+      accessory.context.localSenderIndex = (deviceConfig.localSenderIndex)?? undefined;
 
       try {
         const device = this.enoAccessoryFactory.newAccessory(deviceConfig.eep, this, accessory, deviceConfig);
@@ -319,9 +321,9 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         this.configuredDevicesByUUID.set(uuid, deviceConfig);
 
         // Send the teach message to the device
-        if (accessory.context.deviceSenderIndex !== undefined) {
+        if (accessory.context.localSenderIndex !== undefined) {
 
-          const senderIndex = accessory.context.deviceSenderIndex;
+          const senderIndex = accessory.context.localSenderIndex;
           const eepId = deviceConfig.eepId;
           const manufacturerId = deviceConfig.manufacturerId;
           setTimeout(() => {

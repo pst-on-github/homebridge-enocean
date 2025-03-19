@@ -1,7 +1,7 @@
 
 export class EnoAccessoryContext {
 
-  public deviceSenderIndex: undefined | number;
+  public localSenderIndex: undefined | number;
 
   public contactSensorState?: number;
   public currentPosition?: number;

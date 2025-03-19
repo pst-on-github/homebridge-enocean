@@ -21,4 +21,9 @@ export interface IDeviceConfig {
    * Optionally override the accessory kind for the device.
    */
   accessoryKind?: string;
+
+  /**
+   * Optionally provide the local (sender) ID index for the device.
+   */
+  localSenderIndex?: number;
 }
