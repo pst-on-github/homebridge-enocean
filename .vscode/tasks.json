@@ -17,7 +17,7 @@
         {
             "label": "Install",
             "type": "shell",
-            "command": "npm run build && ./install.sh && sudo hb-service restart",
+            "command": "npm run build && ./src/_dev/install.sh && sudo hb-service restart",
             "problemMatcher": [
                 "$tsc"
             ],

@@ -9,4 +9,5 @@ sudo strace -p <pid> -ff -e write --trace-path /dev/ttyUSB0 -xx
 
 ``` bash
 lsof # list open files
+jq   # pretty print JSON
 ```
