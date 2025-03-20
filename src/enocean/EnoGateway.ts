@@ -119,6 +119,26 @@ export class EnoGateway {
   }
 
   /**
+   * Gets the index of the sender ID.
+   * @param senderId the sender id to get the index for
+   * @returns The index of the sender ID, or undefined if the sender ID is less than or equal to the base ID.
+   */
+  getSenderIndex(senderId: EnOCore.DeviceId): number | undefined {
+
+    if (this._baseId === undefined) {
+      throw 'coreGateway not initialized. Call start() before calling \'getSenderIndex\'.';
+    }
+
+    const senderIndex = senderId.toNumber() - this._baseId.toNumber();
+    if (senderIndex <= 0) {
+      this._log.warn(`'Sender ID '${senderId.toString()}' is less than, or equal to, the base ID. Can't provide an index for it.`);
+      return undefined;
+    }
+
+    return senderIndex;
+  }
+
+  /**
    * Registers an EnOcean accessory.
    * - teach the device
    * - ensure the right parser is available
@@ -222,8 +242,16 @@ export class EnoGateway {
   }
 
   async startLearning(learnTimeSec: number): Promise<void> {
-    await this.coreGateway.startLearning(learnTimeSec);
-    this.log.info(`Start learning (teach-in) for ${learnTimeSec} s`);
+
+    const senderIndexForLearning = this._senderIdManager.acquireNextFreeSemaphore();
+    if (senderIndexForLearning !== undefined) {
+      const senderIdForLearning = this.getSenderId(senderIndexForLearning);
+      // Release it right away, so it can be claimed by the new device
+      this._senderIdManager.release(senderIndexForLearning);
+
+      await this.coreGateway.startLearning(learnTimeSec, senderIdForLearning);
+      this.log.info(`Start learning (teach-in) for ${learnTimeSec} s with sender ID ${senderIdForLearning.toString()}`);
+    }
   }
 
   async stopLearning(): Promise<void> {

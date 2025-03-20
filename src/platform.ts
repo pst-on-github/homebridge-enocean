@@ -47,7 +47,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
 
   private enoAccessoryFactory: AccessoryFactory;
 
-  
+
   /**
    * Constructs a new instance of the platform.
    * 
@@ -171,7 +171,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       if (this.configuredDevicesByUUID.has(uuid)) {
         this.log.warn(`${devConfig.name}: Skipping device. Duplicate EnOID: ${devConfig.devId}`);
         continue;
-      } 
+      }
 
       this.configuredDevicesByUUID.set(uuid, devConfig);
     }
@@ -231,7 +231,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
    * if any errors occur.
    */
   private async enoGateway_teachInNewDevice(info: EnOCore.DeviceInfo): Promise<void> {
-    
+
     const uuid = this.api.hap.uuid.generate(info.deviceId.toString());
     const cachedAccessory = this.cachedAccessoriesByUUID.get(uuid);
     const isManualTeachIn = (info.teachInMethod === EnOCore.TeachInMethods.Manual);
@@ -257,7 +257,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       // Create new accessory
       const accessory = new this.api.platformAccessory<EnoAccessoryContext>(deviceConfig.name, uuid);
       accessory.context = accessory.context ?? new EnoAccessoryContext();
-      accessory.context.localSenderIndex = (deviceConfig.localSenderIndex)?? undefined;
+      accessory.context.localSenderIndex = (deviceConfig.localSenderIndex) ?? undefined;
 
       try {
         const device = this.enoAccessoryFactory.newAccessory(deviceConfig.eep, this, accessory, deviceConfig);
@@ -279,6 +279,12 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       );
       const accessory = new this.api.platformAccessory<EnoAccessoryContext>(deviceConfig.name, uuid);
       accessory.context = accessory.context ?? new EnoAccessoryContext();
+
+      if (info.localId) {
+        accessory.context.localSenderIndex = this._enoGateway.getSenderIndex(info.localId);
+        this.log(`${accessory.displayName}: ${teachInMethod} teach-in with local sender ID ${info.localId.toString()} `
+          + `-> sender Index: ${accessory.context.localSenderIndex}`);
+      }
 
       try {
         const device = this.enoAccessoryFactory.newAccessory(deviceConfig.eep, this, accessory, deviceConfig);
@@ -310,7 +316,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
 
       try {
         const device = this.enoAccessoryFactory.newAccessory(deviceConfig.eep, this, accessory, deviceConfig);
-        
+
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
         await device.setGateway(this._enoGateway);
         this.log.success(`${accessory.displayName} (${device.constructor.name}): registered new accessory by Eltako MSC`);
@@ -348,7 +354,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       if (deviceConfig?.name) {
         message += ` It is already known as '${deviceConfig.name}'.`;
       }
-      
+
       this.log.warn(message);
     }
   }

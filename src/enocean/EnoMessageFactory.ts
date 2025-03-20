@@ -104,4 +104,39 @@ export class EnoMessageFactory {
 
     return erp1;
   }
+
+  /**
+   * Builds a D!-05 message to control blinds
+   * 
+   * @param sourceId the local sender id
+   * @param cmd           1 = goto position, 2 = stop, 3 = query position & angle, 4 = replay pos & angle, 5 = set parameter 
+   * @param position      0-100, 127 = do not change
+   * @param angle         0-100, 127 = do not change
+   * @returns A ready build ERP1 message
+   */
+  static newVldBlindsControlMessage(sourceId: EnoCore.DeviceId, destinationId: EnoCore.DeviceId,
+    cmd: number = 1, position: number = 127, angle: number = 127): EnoCore.ERP1Telegram {
+
+    const erp1 = new EnoCore.ERP1Telegram({ rorg: EnoCore.RORGs.VLD, userDataSize: 4 });
+    erp1.sender = sourceId;
+
+    erp1.subTelNum = 0x03; // SubTelNum 0 = broadcast
+    erp1.destination = destinationId; // Destination 0 = broadcast
+    erp1.signalStrength = 0xFF;
+    erp1.securityLevel = 0x00; // Security level 0 = no security
+    erp1.status = 0x00; // Status 0 = no error
+
+    const channel = 0x0F; // Channel all
+    const lock = 0x00;    // Lock 0 = do not change
+    const repo = 0x00;    // Repositioning 0 = go directly to position/angle
+
+    erp1.setDB(0, (channel & 0x0F) << 4 | (cmd & 0x0F));        // channel & command
+    erp1.setDB(1, (repo & 0x07) << 4 | (lock & 0x07));          // repositioning mode & lock
+    erp1.setDB(2, Math.max(0, Math.min(100, angle)));           // slat angle
+    erp1.setDB(3, Math.max(0, Math.min(100, position)));        // blinds position
+
+    // console.log('newVldBlindsControlMessage: ESP3: ', erp1.toESP3Packet().toString());
+
+    return erp1;
+  }
 }

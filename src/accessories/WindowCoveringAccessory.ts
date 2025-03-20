@@ -52,12 +52,12 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
     super(platform, accessory, config);
     const hap = platform.api.hap;
 
-    if ( accessory.context.currentPosition === undefined) {
+    if (accessory.context.currentPosition === undefined) {
       accessory.context.currentPosition = 100;
     }
-    
+
     this._currentPosition =
-    this._targetPosition = accessory.context.currentPosition;
+      this._targetPosition = accessory.context.currentPosition;
 
     this._positionState = hap.Characteristic.PositionState.STOPPED;
     this._travelVelocity = 100 / (this.config.time ?? 30);
@@ -125,19 +125,15 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
           let erp1 = undefined;
 
           if (this.config.eepId.rorg === EnoCore.RORGs.FOURBS) {
+            // Send Manufacturer specific 4BS message
+            const time_s = Math.abs(this._targetPosition - this._currentPosition) / this._travelVelocity;
+            console.log('SEND CMD', cmd, time_s);
+            erp1 = EnoMessageFactory.new4bsGatewayBlindsMessageEltako(this._senderId, cmd, time_s);
 
-            if (this._gateway.isTeachInMode()) {
-
-              erp1 = EnoMessageFactory.new4bsTeachInMessage(
-                this._senderId, this.config.eepId, this.config.manufacturerId);
-
-              console.log('SEND TEACH', erp1.sender.toString(), erp1.userData.toString('hex'));
-            } else {
-              // Sende Fahrbefehl
-              const time_s = Math.abs(this._targetPosition - this._currentPosition) / this._travelVelocity;
-              console.log('SEND CMD', cmd, time_s);
-              erp1 = EnoMessageFactory.new4bsGatewayBlindsMessageEltako(this._senderId, cmd, time_s);
-            }
+          } else if (this.config.eepId.rorg === EnoCore.RORGs.VLD && this.config.eepId.func === 0x05) {
+            // Blinds Control for position and angle
+            erp1 = EnoMessageFactory.newVldBlindsControlMessage(
+              this._senderId, this.config.devId, 1, 100 - this._targetPosition, 127);
           }
 
           if (erp1 !== undefined) {
@@ -271,22 +267,22 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
     if (currentPosition === 0 || currentPosition === 100) {
       state = this.platform.Characteristic.PositionState.STOPPED;
     }
-    
+
     if (state !== this.platform.Characteristic.PositionState.STOPPED) {
       this._positionReportTimeout = setTimeout(() => {
         // Recursively call this method again to detect 'STOPPED'
         this.EnoGateway_updateByPositionReport(currentPosition);
       }, 3000);
     }
-    
+
     this._positionState = state;
     this._service.updateCharacteristic(this.hap.Characteristic.PositionState, this._positionState);
-    
+
     if (state === this.platform.Characteristic.PositionState.STOPPED) {
       this._targetPosition = currentPosition;
       this._service.updateCharacteristic(this.hap.Characteristic.TargetPosition, this._targetPosition);
     }
-    
+
     this._currentPosition = currentPosition;
     this._service.updateCharacteristic(this.hap.Characteristic.CurrentPosition, this._currentPosition);
     this.accessory.context.currentPosition = this._currentPosition;
