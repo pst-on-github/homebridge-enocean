@@ -1,10 +1,11 @@
-<p align="center">
-  <img src="https://github.com/homebridge/branding/raw/latest/logos/homebridge-wordmark-logo-vertical.png" width="150">
-</p>
-
 # Homebridge EnOcean Platform
 
+[![Github build & lint](https://github.com/pst-on-github/homebridge-enocean/actions/workflows/build.yml/badge.svg)](https://github.com/pst-on-github/homebridge-enocean/actions/workflows/build.yml)
 [![GitHub last commit](https://img.shields.io/github/last-commit/pst-on-github/homebridge-enocean.svg?style=plastic)](https://github.com/pst-on-github/homebridge-enocean)
+[![npm version](https://img.shields.io/npm/v/@pst-on-npm/homebridge-enocean.svg?label=Latest)](https://www.npmjs.com/package/@pst-on-npm/homebridge-enocean)
+[![npm downloads](https://img.shields.io/npm/dt/@pst-on-npm/homebridge-enocean.svg?label=Downloads)](https://www.npmjs.com/package/@pst-on-npm/homebridge-enocean)
+[![verified-by-homebridge](https://badgen.net/badge/Homebridge/not%20verified/red)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
+
 
 Integrate EnOcean devices into Homebridge. Still *beta*!
 
@@ -23,7 +24,7 @@ A5-30 | Contact Sensor | Digital Input
 A5-38-08 | Outlet | Central Command, Gateway type 08 is supported
 A5-3F-7F Eltako | Window Covering | 7F Eltako specific
 D1-Eltako | none | Used for auto teach-in with Eltako devices
-D2-05.ts | Window Covering | 00 (not fully test)
+D2-05.ts | Window Covering | 00 (not fully tested)
 F6 | Switches | Programmable switch | various
 
 Some accessories support multiple services. History service is provided by the fakegato module.
@@ -49,7 +50,7 @@ isHistoryServiceEnabled | Enable History Service for Eve App. If enabled, the pl
 
 Maybe it is a good idea to use the is-path for `comDevice`, like `/dev/serial/usb-EnOcean_GmbH_EnOcean_USB_300_DB_<some-id>-if00-port0`. That way homebridge can access the device if you plug it to another USB port.
 
-If you see 'access denied' in the logs, for the com device, you might need to add homebridge to the plogdev group (`adduser homebridge plugdev` on raspian).
+If you see 'access denied' in the logs, for the com device, you might need to add homebridge to the plugdev group (`add user homebridge plugdev` on Raspbian).
 
 ## EnOceanDevice configuration
 
@@ -65,33 +66,53 @@ accessoryKind | Allows to override the created accessory. By default (auto) it i
 
 ## Teach-in
 
-In order to teach-in (learn) new devices a *Learn Switch* accessory is provides.
+In order to teach-in (learn) new devices a *Learn Switch* accessory is provided.
 
-1. It enables the plug-in to listen to teach-in messages. They are written to the logs.
-2. It enabled transmission of teach-in messages when a manually configured accessory is activated (i.e. switched on). 
+1. It enables the plug-in to print all received messages to the logs (snoop).
+2. It enables the plug-in to deal with teach-in messages. They are written to the logs. 
+3. It enabled transmission of teach-in messages when a manually configured accessory is activated (i.e. a switch is switched on/off). 
+
+The following approach is suggested (in that order) to bind new devices:
+
+1. Auto create. Works with Eltako Tip-Funk devices.
+2. Fully automatic teach-in.
+3. Semi automatic teach-in
+4. Manual configuration.
 
 ### Auto create 
 
-Sone devices send an indication of their EEP and manufacturer if they are placed into teach-in mode. If possible they are automatically created and added to the configuration.
+Some devices send an indication of their EEP and manufacturer if they are placed into teach-in mode. If possible they are automatically created and added to the configuration (Works with Eltako Tipp-Funk®). Auto create is enabled in the plugin by default.
+
+### Fully Automatic teach-in
+
+Works similar to auto create but requires the a. m. *Learn Switch* accessory set to on first. Then set the device teach/learn mode (works with NodON Roller Shutter actors, D2-05-00 profile and other devices which are capable of sending a teach in message).
+
+### Semi automatic teach-in
+
+<TODO>
 
 ### Manual teach-in
 
-#### Devices with a teach button (unidirectional sensors):
+<TODO>
+
+## Teach in examples
+
+### Devices with a teach button (unidirectional sensors):
 
 1. Activate the *EnOcean Learn* accessory.
 2. Command the device to transmit a learning message.
 
-#### Switches
+### Switches
 
 Configure them manually. Turn on the *EnOcean Learn* accessory to capture the EnOID from the logs.
 
 They come with 2 rocker switches for the supported types 0x01 and 0x02. The four buttons will end up as four stateless programmable switches. The single, double and long press events are supported (not sure whether the double press makes sens though, it also delays the single press detection). 
 
-#### Outlet actors F6-02-xx/A5-38-08
+### Outlet actors F6-02-xx/A5-38-08
 
 Some of them support auto create when they are set to learn mode.
 
-##### Eltako FSSA-230V
+#### Eltako FSSA-230V
 
 1. Configuring the FSSA in homebridge
 
@@ -104,7 +125,7 @@ Some of them support auto create when they are set to learn mode.
     1. Set the FSSA to learn mode (left button 1 s, right button 2 times)
     2. Activate the *EnOcean Learn* accessory.
     3. Click the FSSA accessory. This will send a teach-in message to the FSSA. 
-    4. Torn off the *EnOcean Learn* accessory.
+    4. Turn off the *EnOcean Learn* accessory.
     5. Verify switching the FSSA from homebridge.
     6. Verify confirmation telegrams are working by switching the FSSA using the right button.
 
@@ -116,6 +137,12 @@ Using the A5 EEP automatically enabled the acknowledge telegrams from the socket
 
 ## Technical details
 
+### Local sender IDs 
+
+As part of the concept of EnOcean the transceivers emulating different sender by using local sender IDs.
+
+This plugin does not use the IDs directly but maintains offsets to the base ID of the transceiver. They are assigned automatically during teach-in and accessory creation. This local sender index is stored with the accessory (context) data in Homebridge. It can also be coerced by configuration (`localSenderIndex`).
+
 ### fakegato
 
 *fakegato* debug level logging is off by default (it just doesn't get the log instance forwarded, so you won't see more severe messages as well). To enable it mention `homebridge-enocean-fakegato` in the DEBUG environment variable. See *Homebridge > Settings > Startup & Environment > DEBUG*. 
@@ -125,5 +152,5 @@ Using the A5 EEP automatically enabled the acknowledge telegrams from the socket
 Thanks to [Henning Kerstan](https://github.com/henningkerstan) for the [enocean-core](https://github.com/henningkerstan/enocean-core) repo. That saved me to delve into the details of the EnOcean protocol, but also was a great resource for learning.
 
 Also thanks to [simont77](https://github.com/simont77) for the [fakegato-history](https://github.com/simont77/fakegato-history) repo, which made it pretty easy to get the fancy history graphs in the Eve app.
-
+And special thanks to the maintainer of the FHEM/[10_EnOcean](https://github.com/fhem/fhem-mirror/blob/master/fhem/FHEM/10_EnOcean.pm) Perl module for this comprehensive information source.
 ---
