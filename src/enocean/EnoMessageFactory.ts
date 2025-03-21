@@ -31,7 +31,7 @@ export class EnoMessageFactory {
     erp1.setDB(2, ((manufacturer >> 8) & 0x07) | ((eepId.type << 3) & 0xF8));
     erp1.setDB(3, ((eepId.type >> 5) & 0x03) | ((eepId.func << 2) & 0xFC));
 
-    //  "\x55\x00\x0a\x00\x01\x80\xa5\xff\xf8\x0d\x80\xff\xe8\x62\x10\x00\xc8", 17
+    // Lerntelegramm DB3..DB0 muss so aussehen: 0xE0, 0x40, 0x0D, 0x80
 
     return erp1;
   }
@@ -50,6 +50,31 @@ export class EnoMessageFactory {
     erp1.setDB(1, 0x00); // DB1 time n. a.
     erp1.setDB(2, 0x00); // DB2 time n. a.
     erp1.setDB(3, 0x01); // DB3 tells the GW command 0x01 = Switching
+
+    return erp1;
+  }
+
+  static new4bsGatewayDimmingMessage(localDeviceId: EnoCore.DeviceId, on: boolean, brightness: number): EnoCore.ERP1Telegram {
+
+    const erp1 = new EnoCore.ERP1Telegram({ rorg: EnoCore.RORGs.FOURBS });
+    erp1.sender = localDeviceId;
+  
+    /*
+     * Data_byte3 = 0x02        DIMMING CMD
+     * Data_byte2 = Dimmwert in % von 0-100 dez. 
+     * Data_byte1 = Dimmgeschwindigkeit
+     *              0x00 = die am Dimmer eingestellte Dimmgeschwindigkeit wird verwendet.
+     *              0x01 = sehr schnelle Dimmspeed Bis 0xFF = sehr langsame Dimmspeed 
+     * Data_byte0 = DB0_Bit3 = LRN Button (0 = Lerntelegramm, 1 = Datentelegramm)
+     *              DB0_Bit0 = 1: Dimmer an, 0: Dimmer aus.
+     *              DB0_Bit2 = 1: Dimmwert blockieren
+     *                         0: Dimmwert nicht blockiert
+     */
+  
+    erp1.setDB(0, on ? 0x09 : 0x08);                        // 0x80 = DATA, 0 = LRN
+    erp1.setDB(1, 0x01);                                    // DB1 fastest dim speed
+    erp1.setDB(2, Math.max(0, Math.min(100, brightness)));  // DB2 brightness 0-100 %
+    erp1.setDB(3, 0x02);                                    // DB3 tells the GW command 0x02 = Dimming
 
     return erp1;
   }

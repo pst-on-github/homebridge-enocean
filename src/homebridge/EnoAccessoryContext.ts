@@ -3,6 +3,7 @@ export class EnoAccessoryContext {
 
   public localSenderIndex: undefined | number;
 
+  public brightness?: number;
   public contactSensorState?: number;
   public currentPosition?: number;
   public currentRelativeHumidity?: number;

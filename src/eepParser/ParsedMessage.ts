@@ -8,6 +8,7 @@ export interface IParsedValues {
   
   ambientLightLevel?: number; // lux
   batteryLevel?: number;
+  brightness?: number;        // %
   buttons?: string[];
   currentPosition?: number;
   currentSlatAngle?: number;
