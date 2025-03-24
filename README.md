@@ -29,7 +29,7 @@ F6 | Switches | Programmable switch | various
 
 Some accessories support multiple services. History service is provided by the fakegato module.
 
-Accessories | Services and Characteristics (main service first)
+Accessory | Services and Characteristics (main service first)
 -|-
 Contact Sensor | ContactSensor, Battery, History 
 Leak Sensor | LeakSensor, TemperatureSensor, Battery, History
@@ -43,14 +43,12 @@ Window Covering | WindowCovering
 
 Property | Description
 -|-
-name | Platform Name
-comDevice | Path to the EnOcean device. E.g. `/dev/ttyUSB0`. USB300 type EnOcean transceiver.
+name | Platform Name (`EnOcean`)
+comDevice | Path to the EnOcean gateway device. E.g. `/dev/ttyUSB0`. USB300 type EnOcean gateway transceiver. Consider using `/dev/serial/by-id/<device>` on Raspian.
 isLearnSwitchEnabled | Learn Switch. If enabled, the plugin will create a switch accessory (EnOcean Learn) to switch learn/teach-in mode.
 isHistoryServiceEnabled | Enable History Service for Eve App. If enabled, the plugin support the fakegato-history service to support history graphs in the Eve app. 
 
-Maybe it is a good idea to use the is-path for `comDevice`, like `/dev/serial/usb-EnOcean_GmbH_EnOcean_USB_300_DB_<some-id>-if00-port0`. That way homebridge can access the device if you plug it to another USB port.
-
-If you see 'access denied' in the logs, for the com device, you might need to add homebridge to the plugdev group (`add user homebridge plugdev` on Raspbian).
+If you see 'access denied' in the logs, for the gateway device, you might need to add homebridge to the plugdev group (`add user homebridge plugdev` on Raspbian).
 
 ## EnOceanDevice configuration
 
@@ -152,5 +150,7 @@ This plugin does not use the IDs directly but maintains offsets to the base ID o
 Thanks to [Henning Kerstan](https://github.com/henningkerstan) for the [enocean-core](https://github.com/henningkerstan/enocean-core) repo. That saved me to delve into the details of the EnOcean protocol, but also was a great resource for learning.
 
 Also thanks to [simont77](https://github.com/simont77) for the [fakegato-history](https://github.com/simont77/fakegato-history) repo, which made it pretty easy to get the fancy history graphs in the Eve app.
+
 And special thanks to the maintainer of the FHEM/[10_EnOcean](https://github.com/fhem/fhem-mirror/blob/master/fhem/FHEM/10_EnOcean.pm) Perl module for this comprehensive information source.
+
 ---
