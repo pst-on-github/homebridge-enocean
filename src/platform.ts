@@ -101,8 +101,13 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       await this.discoverDevices();
 
       // Print a table with all configured devices
-      const table3 = Array.from(this.discoveredAccessoriesByUUID.values()).map(d => d.config);
-      console.table(table3, ['name', 'id', 'eep', 'model', 'manufacturer', 'manufacturerId']);
+      if (this.discoveredAccessoriesByUUID.size > 0) {
+        const table3 = Array.from(this.discoveredAccessoriesByUUID.values()).map(d => d.config);
+        console.table(table3, ['name', 'id', 'eep', 'model', 'manufacturer']);
+        console.table(table3, ['name', 'time', 'accessoryKind', 'manufacturerId']);
+      } else {
+        log.info('No EnOcean devices configured');
+      }
     });
 
     this.api.on('shutdown', () => {
@@ -144,7 +149,12 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
    */
   private async discoverDevices(): Promise<void> {
 
-    await this._enoGateway.start();
+    try { 
+      await this._enoGateway.start();
+    } catch (error) {
+      this.log.error('Failed to start EnOcean gateway:', error);
+      return;
+    }
 
     const cached = new Map(this.cachedAccessoriesByUUID); // Assume all orphans
 
@@ -155,25 +165,27 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
     }
 
     // Validate configured devices
-    for (const a of this.config.devices) {
-      let devConfig;
-      try {
-        devConfig = new DeviceConfig(a.id, a.eep, a.name, a.manufacturer, a.model);
-        devConfig.time = a.time;
-        devConfig.accessoryKind = a.accessoryKind;
-        devConfig.localSenderIndex = a.localSenderIndex;
-      } catch (error) {
-        this.log.warn(`${a.name}: Skipping device. Wrong configuration. Check EnOID and EEP. ${error}`);
-        continue;
-      }
-      const uuid = this.api.hap.uuid.generate(devConfig.devId.toString());
+    if (Array.isArray(this.config.devices)) {
+      for (const a of this.config.devices) {
+        let devConfig;
+        try {
+          devConfig = new DeviceConfig(a.id, a.eep, a.name, a.manufacturer, a.model);
+          devConfig.time = a.time;
+          devConfig.accessoryKind = a.accessoryKind;
+          devConfig.localSenderIndex = a.localSenderIndex;
+        } catch (error) {
+          this.log.warn(`${a.name}: Skipping device. Wrong configuration. Check EnOID and EEP. ${error}`);
+          continue;
+        }
+        const uuid = this.api.hap.uuid.generate(devConfig.devId.toString());
 
-      if (this.configuredDevicesByUUID.has(uuid)) {
-        this.log.warn(`${devConfig.name}: Skipping device. Duplicate EnOID: ${devConfig.devId}`);
-        continue;
-      }
+        if (this.configuredDevicesByUUID.has(uuid)) {
+          this.log.warn(`${devConfig.name}: Skipping device. Duplicate EnOID: ${devConfig.devId}`);
+          continue;
+        }
 
-      this.configuredDevicesByUUID.set(uuid, devConfig);
+        this.configuredDevicesByUUID.set(uuid, devConfig);
+      }
     }
 
     // Set the teach in listener

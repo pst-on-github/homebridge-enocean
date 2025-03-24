@@ -1,4 +1,5 @@
 import { Logging } from 'homebridge';
+import * as fs from 'fs';
 
 import * as EnOCore from 'enocean-core';
 
@@ -206,7 +207,11 @@ export class EnoGateway {
       throw this.constructor.name + 'start() can only be called once';
     }
 
-    this._coreGateway = await EnOCore.Gateway.connectToSerialPort(this._serialPortPath, new InMemoryDeviceInfoMap());
+    if (!fs.existsSync(this.serialPortPath)) {
+      throw `${this.serialPortPath}: no such device`;
+    }
+    
+    this._coreGateway = EnOCore.Gateway.connectToSerialPort(this._serialPortPath, new InMemoryDeviceInfoMap());
 
     const maxAttempt = 50;
     let attempt = 0;
