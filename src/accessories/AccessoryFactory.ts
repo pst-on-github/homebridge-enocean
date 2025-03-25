@@ -39,7 +39,7 @@ export class AccessoryFactory {
 
     this.registerClass('contactSensor', ContactSensorAccessory); 
     this.registerClass('leakSensor', LeakSensorAccessory);
-    this.registerClass('lightBulb', LightbulbAccessory);
+    this.registerClass('lightbulb', LightbulbAccessory);
     this.registerClass('motionSensor', MotionSensorAccessory);
     this.registerClass('outlet', OutletAccessory);
     this.registerClass('statelessProgrammableSwitch', StatelessProgrammableSwitchAccessory);

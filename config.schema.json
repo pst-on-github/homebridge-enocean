@@ -48,6 +48,7 @@
                             "oneOf":[
                                 {  "title": "Contact Sensor", "enum": ["contactSensor"] },
                                 {  "title": "Leak Sensor", "enum": ["leakSensor"] },
+                                {  "title": "Lightbulb", "enum": ["lightbulb"] },
                                 {  "title": "Motion Sensor", "enum": ["motionSensor"] },
                                 {  "title": "Outlet", "enum": ["outlet"] },
                                 {  "title": "Stateless Programmable Switch", "enum": ["statelessProgrammableSwitch"] },
