@@ -1,4 +1,4 @@
-# Tips
+# Cheat sheet
 
 ## trace serial
 
@@ -14,4 +14,5 @@ jq   # pretty print JSON
 
 ``` bash
 npm publish --tag=beta --access=public
+npm dist-tag add @pst-on-npm/homebridge-enocean@1.m.b-beta.1 latest
 ```
