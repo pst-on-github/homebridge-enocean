@@ -100,8 +100,6 @@ export class EnoMessageFactory {
     erp1.setDB(2, t_lsb);        // Data_byte2 = Laufzeit in 100 ms LSB, oder Laufzeit in Sekunden 1-255 dez.
     erp1.setDB(3, t_msb);        // Data_byte3 = Laufzeit in 100ms MSB
 
-    console.log('BLINDS: ', erp1.sender.toString(), erp1.userData.toString('hex'));
-
     return erp1;
   }
 
@@ -114,8 +112,6 @@ export class EnoMessageFactory {
     erp1.setDB(1, (data >> 8) & 0xff);
     erp1.setDB(2, (data >> 16) & 0xff);
     erp1.setDB(3, (data >> 24) & 0xff);
-
-    console.log('DATA >: ', erp1.userData.toString('hex'));
 
     return erp1;
   }

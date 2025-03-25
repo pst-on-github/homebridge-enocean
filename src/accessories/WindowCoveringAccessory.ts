@@ -107,7 +107,7 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
   private _sendTimeout: NodeJS.Timeout | undefined;
 
   private async targetPosition_onSet(value: CharacteristicValue): Promise<void> {
-    this.platform.log.debug(`SET ${this.constructor.name} target position ${value}`);
+    this.platform.log.info(`SET ${this.constructor.name} target position ${value}`);
 
     if (value !== this._targetPosition) {
 
@@ -119,7 +119,6 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
         clearTimeout(this._sendTimeout);
       }
       this._sendTimeout = setTimeout(() => {
-        console.log('SEND TIMEOUT');
 
         if (this._gateway && this._senderId) {
           let erp1 = undefined;
@@ -127,7 +126,6 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
           if (this.config.eepId.rorg === EnoCore.RORGs.FOURBS) {
             // Send Manufacturer specific 4BS message
             const time_s = Math.abs(this._targetPosition - this._currentPosition) / this._travelVelocity;
-            console.log('SEND CMD', cmd, time_s);
             erp1 = EnoMessageFactory.new4bsGatewayBlindsMessageEltako(this._senderId, cmd, time_s);
 
           } else if (this.config.eepId.rorg === EnoCore.RORGs.VLD && this.config.eepId.func === 0x05) {
@@ -229,7 +227,7 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
         this._confirmedPosition = confirmedPosition;
         this._targetPosition = confirmedPosition;
         interpolatedPos = confirmedPosition;
-        console.log('BLINDS POSITION CONFIRMED', interpolatedPos);
+        this.platform.log.info(`${this.accessory.displayName}: position confirmed: ${interpolatedPos}`);
       }
 
       this._currentPosition = Math.round(interpolatedPos);
