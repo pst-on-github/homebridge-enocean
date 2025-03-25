@@ -1,5 +1,5 @@
 {
-    "pluginAlias": "EnOcean",
+    "pluginAlias": "EnOceanPlatform",
     "pluginType": "platform",
     "singular": true,
     "strictValidation": false,
@@ -45,9 +45,7 @@
                             "required": false,
                             "title": "Accessory Kind Override",
                             "type": "string",
-                            "default": "Auto (from EEP)",
                             "oneOf":[
-                                {  "title": "Auto (from EEP)", "enum": ["auto"] },
                                 {  "title": "Contact Sensor", "enum": ["contactSensor"] },
                                 {  "title": "Leak Sensor", "enum": ["leakSensor"] },
                                 {  "title": "Motion Sensor", "enum": ["motionSensor"] },
@@ -82,7 +80,7 @@
                     "source": [
                         "/dev/ttyUSB0",
                         "/dev/ttyUSB1",
-                        "/dev/serial/by-id/usb-EnOcean_GmbH_EnOcean_USB_300_DB_FTO8VWK-if00-port0"
+                        "/dev/serial/by-id/usb-EnOcean_GmbH_EnOcean_USB_300_DB_xxxxxx-if00-port0"
                     ]
                 }
             },
