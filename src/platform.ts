@@ -103,8 +103,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       // Print a table with all configured devices
       if (this.discoveredAccessoriesByUUID.size > 0) {
         const table3 = Array.from(this.discoveredAccessoriesByUUID.values()).map(d => d.config);
-        console.table(table3, ['name', 'id', 'eep', 'model', 'manufacturer']);
-        console.table(table3, ['name', 'time', 'accessoryKind', 'manufacturerId']);
+        console.table(table3, ['name', 'id', 'eep', 'model', 'manufacturer', 'time']);
       } else {
         log.info('No EnOcean devices configured');
       }
@@ -306,7 +305,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         this.discoveredAccessoriesByUUID.set(uuid, device);
 
         const configUpdater = new HbConfigUpdater(this.api.user.configPath(), PLATFORM_NAME);
-        configUpdater.addDeviceToHomebridgeConfig(deviceConfig);
+        await configUpdater.addDeviceToHomebridgeConfig(deviceConfig);
         this.configuredDevicesByUUID.set(uuid, deviceConfig);
 
       } catch (error) {
@@ -335,7 +334,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         this.discoveredAccessoriesByUUID.set(uuid, device);
 
         const configUpdater = new HbConfigUpdater(this.api.user.configPath(), PLATFORM_NAME);
-        configUpdater.addDeviceToHomebridgeConfig(deviceConfig);
+        await configUpdater.addDeviceToHomebridgeConfig(deviceConfig);
         this.configuredDevicesByUUID.set(uuid, deviceConfig);
 
         // Send the teach message to the device
