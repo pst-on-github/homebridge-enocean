@@ -1,6 +1,6 @@
 /**
  * This is the name of the platform that users will use to register the plugin in the Homebridge config.json
- * like { "platform": "enOceanPlatform", "name": "EnOcean" }
+ * like { "platform": "EnOceanPlatform", "name": "EnOcean" }
  */
 export const PLATFORM_NAME = 'EnOceanPlatform';
 

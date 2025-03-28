@@ -42,9 +42,9 @@ export class HbConfigUpdater {
     };
 
     const newEntry: IDeviceConfig = {
+      name: newItem.name,
       id: newItem.id,
       eep: newItem.eep,
-      name: newItem.name,
       model: newItem.model,
       manufacturer: newItem.manufacturer,
     };
