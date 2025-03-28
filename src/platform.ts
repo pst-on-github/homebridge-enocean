@@ -255,7 +255,9 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         const device = this.enoAccessoryFactory
           .newAccessory(deviceConfig.eep, this, cachedAccessory as PlatformAccessory<EnoAccessoryContext>, deviceConfig);
         cachedAccessory.context = cachedAccessory.context ?? new EnoAccessoryContext();
-
+        if (deviceConfig.localSenderIndex) {
+          cachedAccessory.context.localSenderIndex = deviceConfig.localSenderIndex;
+        }
         await device.setGateway(this._enoGateway);
 
         this.api.updatePlatformAccessories([cachedAccessory]);
@@ -268,7 +270,9 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       // Create new accessory
       const accessory = new this.api.platformAccessory<EnoAccessoryContext>(deviceConfig.name, uuid);
       accessory.context = accessory.context ?? new EnoAccessoryContext();
-      accessory.context.localSenderIndex = (deviceConfig.localSenderIndex) ?? undefined;
+      if (deviceConfig.localSenderIndex) {
+        accessory.context.localSenderIndex = deviceConfig.localSenderIndex;
+      }
 
       try {
         const device = this.enoAccessoryFactory.newAccessory(deviceConfig.eep, this, accessory, deviceConfig);
