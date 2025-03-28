@@ -57,7 +57,6 @@ export class HistoryServiceFactory {
 
     if (platform.FakeGatoHistoryService) {
       const optionalParams = this.getOptionalParams(platform.api, config, platform.log);
-      console.log('OPTIONAL PARAMS', optionalParams);
       const historyService = new platform.FakeGatoHistoryService(service, accessory, optionalParams);
       return historyService;
     }
