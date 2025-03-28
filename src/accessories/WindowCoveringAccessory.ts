@@ -294,7 +294,7 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
         ? 'INCREASING'
         : 'DECREASING';
 
-    let message = `${this.accessory.displayName}: update currentPosition=${this._currentPosition} positionState=${state}`;
+    let message = `${this.accessory.displayName}: UPDATE currentPosition=${this._currentPosition} positionState=${state}`;
     if (suffix !== undefined) {
       message += ` ${suffix}`;
     }

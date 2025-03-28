@@ -143,7 +143,7 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
     if (message.values.isOn !== undefined) {
       this._stateOn = (message.values.isOn ?? false) || (message.values.buttons?.includes('B0') ?? false);
       this.accessory.context.on = this._stateOn;
-      this.platform.log.info(`${this.accessory.displayName}: update on=${this._stateOn}`);
+      this.platform.log.info(`${this.accessory.displayName}: UPDATE on ${this._stateOn}`);
       this._service.updateCharacteristic(this.hap.Characteristic.On, this._stateOn);
     }
 
@@ -151,7 +151,7 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
     if (message.values.brightness !== undefined && this._stateOn) {
       this._brightness = (message.values.brightness);
       this.accessory.context.brightness = this._brightness;
-      this.platform.log.info(`${this.accessory.displayName}: update brightness=${this._brightness}`);
+      this.platform.log.info(`${this.accessory.displayName}: UPDATE brightness ${this._brightness}`);
       this._service.updateCharacteristic(this.hap.Characteristic.Brightness, this._brightness);
     }
   }
