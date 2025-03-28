@@ -91,7 +91,7 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
   }
 
   private async Brightness_OnSet(value: CharacteristicValue): Promise<void> {
-    this.platform.log.debug(`SET DIM ${this.constructor.name} ${value}`);
+    this.platform.log.info(`${this.accessory.displayName}: SET brightness ${value}`);
 
     this._brightness = value as number;
     this.accessory.context.brightness = this._brightness;
@@ -111,7 +111,7 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
   }
 
   private async On_OnSet(value: CharacteristicValue): Promise<void> {
-    this.platform.log.debug(`SET ON ${this.constructor.name} ${value}`);
+    this.platform.log.info(`${this.accessory.displayName}: SET on ${value}`);
 
     this._stateOn = value as boolean;
     this.accessory.context.on = this._stateOn;

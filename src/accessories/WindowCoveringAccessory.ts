@@ -107,7 +107,7 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
   private _sendTimeout: NodeJS.Timeout | undefined;
 
   private async targetPosition_onSet(value: CharacteristicValue): Promise<void> {
-    this.platform.log.info(`SET ${this.constructor.name} target position ${value}`);
+    this.platform.log.info(`${this.accessory.displayName}: SET targetPosition ${value}`);
 
     if (value !== this._targetPosition) {
 
