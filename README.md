@@ -145,6 +145,8 @@ This plugin does not use the IDs directly but maintains offsets to the base ID o
 
 *fakegato* debug level logging is off by default (it just doesn't get the log instance forwarded, so you won't see more severe messages as well). To enable it mention `homebridge-enocean-fakegato` in the DEBUG environment variable. See *Homebridge > Settings > Startup & Environment > DEBUG*. 
 
+The history is stored in files in the homebridge persistence folder (`/var/lib/homebridge/persist` on Raspian). Filenames consist of the platform name and the EnOcean ID like `EnOceanPlatform.EnOID_11-22-33-44.history.json`.
+
 ## Acknowledgements
 
 Thanks to [Henning Kerstan](https://github.com/henningkerstan) for the [enocean-core](https://github.com/henningkerstan/enocean-core) repo. That saved me to delve into the details of the EnOcean protocol, but also was a great resource for learning.

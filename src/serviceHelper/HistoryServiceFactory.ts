@@ -1,7 +1,7 @@
 import { API, Logging, PlatformAccessory, Service } from 'homebridge';
 import { EnOceanHomebridgePlatform } from '../platform';
 import { DeviceConfig } from '../homebridge/DeviceConfig';
-import { PLUGIN_NAME } from '../settings';
+import { PLATFORM_NAME } from '../settings';
 import { EnoAccessoryContext } from '../homebridge/EnoAccessoryContext';
 
 export declare class HistoryService extends Service  {
@@ -19,7 +19,7 @@ export class HistoryServiceFactory {
    * @param config The device config is used to assemble a unique name
    */
   private static getFilename(config: DeviceConfig): string {
-    const filename = `${PLUGIN_NAME}.EnOID_${config.devId.toString().replace(/:/g, '-')}.history.json`;
+    const filename = `${PLATFORM_NAME}.EnOID_${config.devId.toString().replace(/:/g, '-')}.history.json`;
     return filename;
   }
 
@@ -57,6 +57,7 @@ export class HistoryServiceFactory {
 
     if (platform.FakeGatoHistoryService) {
       const optionalParams = this.getOptionalParams(platform.api, config, platform.log);
+      console.log('OPTIONAL PARAMS', optionalParams);
       const historyService = new platform.FakeGatoHistoryService(service, accessory, optionalParams);
       return historyService;
     }
