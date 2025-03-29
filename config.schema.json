@@ -85,6 +85,12 @@
                     ]
                 }
             },
+            "isAutoCreateEnabled": {
+                "title": "Auto-Create",
+                "description": "If enabled, the plugin will react on Eltako teach-in request messages (MSC type) and create and bind some devices automatically.",
+                "default": false,
+                "type": "boolean"
+            },
             "isLearnSwitchEnabled": {
                 "title": "Learn Switch",
                 "description": "If enabled, the plugin will create a switch accessory (EnOcean Learn) to switch learn/teach-in mode.",

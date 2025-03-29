@@ -47,10 +47,10 @@ async function main() {
   // ----------------------------------------------------------------------
 
   const serialPort: string = '/dev/ttyUSB0';
-  const gw = new EnoGateway(serialPort, log);
+  const gw = new EnoGateway(serialPort, true, log);
 
   await gw.start();
-  
+
   // teach is missing!!!
 
   await gw.registerEnoAccessory(config, (message: EnoCore.EEPMessage) => {

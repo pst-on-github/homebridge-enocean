@@ -46,6 +46,7 @@ export class EnoGateway {
    */
   constructor(
     private serialPortPath: string,
+    private isAutoCreateEnabled: boolean,
     private log: Logging,
   ) {
     this._serialPortPath = serialPortPath;
@@ -334,6 +335,11 @@ export class EnoGateway {
     if (telegram.rorg === EnOCore.RORGs.MSC) {
 
       const mscMessage = this.mscParser.parse(telegram);
+
+      if (!this.isAutoCreateEnabled) {
+        this.log.debug(`RX: ${telegram.sender.toString()} ${this.mscParser.toString(mscMessage.values)} (Auto-create disabled)`);
+        return;
+      }
 
       this.log.info(`RX: ${telegram.sender.toString()} ${this.mscParser.toString(mscMessage.values)}`);
 

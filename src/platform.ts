@@ -87,7 +87,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       this.FakeGatoHistoryService = require('fakegato-history')(this.api);
     }
 
-    this._enoGateway = new EnoGateway(this.config.comDevice, log);
+    this._enoGateway = new EnoGateway(this.config.comDevice, this.config.isAutoCreateEnabled, log);
     this.enoAccessoryFactory = new AccessoryFactory();
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
@@ -148,7 +148,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
    */
   private async discoverDevices(): Promise<void> {
 
-    try { 
+    try {
       await this._enoGateway.start();
     } catch (error) {
       this.log.error('Failed to start EnOcean gateway:', error);
