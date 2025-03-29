@@ -173,13 +173,13 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
           devConfig.accessoryKind = a.accessoryKind;
           devConfig.localSenderIndex = a.localSenderIndex;
         } catch (error) {
-          this.log.warn(`${a.name}: Skipping device. Wrong configuration. Check EnOID and EEP. ${error}`);
+          this.log.warn(`${a.name}: Skipping device. Wrong configuration. Check ID and EEP. ${error}`);
           continue;
         }
         const uuid = this.api.hap.uuid.generate(devConfig.devId.toString());
 
         if (this.configuredDevicesByUUID.has(uuid)) {
-          this.log.warn(`${devConfig.name}: Skipping device. Duplicate EnOID: ${devConfig.devId}`);
+          this.log.warn(`${devConfig.name}: Skipping device. Duplicate EnOcean ID: ${devConfig.devId}`);
           continue;
         }
 
@@ -187,7 +187,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       }
     }
 
-    // Set the teach in listener
+    // Set the teach-in listener
     this._enoGateway.addDeviceTeachInEventListener(this.enoGateway_teachInNewDevice.bind(this));
 
     // It is important that the existing accessories are initialized first,
@@ -199,7 +199,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       // Check if this cached accessory is still in the configuration
       const devConfig = this.configuredDevicesByUUID.get(key);
       if (devConfig) {
-        // teach the device and rely on the teach in callback
+        // teach the device and rely on the teach-in callback
         await this._enoGateway.teachDevice(devConfig);
       } else {
         this.log.info(`${value.displayName}: removing abandoned cached accessory`);
@@ -285,7 +285,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         this.log.warn(`${deviceConfig.name}: failed to create accessory. ${error}`);
       }
     } else if (!isManualTeachIn && !cachedAccessory && !deviceConfig) {
-      // Create new accessory received via teach in telegram
+      // Create new accessory received via teach-in telegram
       deviceConfig = new DeviceConfig(
         info.deviceId.toString(),
         info.eep.toString(),
@@ -316,7 +316,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         this.log.warn(`${deviceConfig.name}: failed to create new accessory by ${teachInMethod}. ${error}`);
       }
     } else if (isManualTeachIn && !cachedAccessory && !deviceConfig) {
-      // Create new accessory received via MSC teach in telegram (ELTAKO)
+      // Create new accessory received via MSC teach-in telegram (ELTAKO)
 
       deviceConfig = this._enoGateway.armedConfig;
       if (deviceConfig === undefined) {
@@ -349,14 +349,14 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
           const manufacturerId = deviceConfig.manufacturerId;
           setTimeout(() => {
             const localId = this._enoGateway.getSenderId(senderIndex);
-            this.log.info(`Sending teach in to '${accessory.displayName}' with local ID '${localId.toString()}'`);
+            this.log.info(`Sending teach-in to '${accessory.displayName}' with local ID '${localId.toString()}'`);
             const erp1TeachIn = EnoMessageFactory
               .new4bsTeachInMessage(localId, eepId, manufacturerId);
             this._enoGateway.sendERP1Telegram(erp1TeachIn);
           }, 3000);
 
         } else {
-          this.log.warn(`Cannot send teach in to '${accessory.displayName}': No local ID was provided`);
+          this.log.warn(`Cannot send teach-in to '${accessory.displayName}': No local ID was provided`);
         }
 
       } catch (error) {

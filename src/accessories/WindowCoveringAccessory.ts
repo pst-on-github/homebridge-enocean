@@ -101,7 +101,7 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
     }
 
     this._senderId = gateway.getSenderId(this.accessory.context.localSenderIndex!);
-    this.platform.log.info(`${this.accessory.displayName}: assigned sender EnOID ${this._senderId?.toString()}`);
+    this.platform.log.info(`${this.accessory.displayName}: assigned local sender ID ${this._senderId?.toString()}`);
   }
 
   private _sendTimeout: NodeJS.Timeout | undefined;

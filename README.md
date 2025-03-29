@@ -103,7 +103,7 @@ Works similar to auto create but requires the a. m. *Learn Switch* accessory set
 
 ### Switches
 
-Configure them manually. Turn on the *EnOcean Learn* accessory to capture the EnOID from the logs.
+Configure them manually. Turn on the *EnOcean Learn* accessory to capture the EnOcean ID from the logs.
 
 They come with 2 rocker switches for the supported types 0x01 and 0x02. The four buttons will end up as four stateless programmable switches. The single, double and long press events are supported (not sure whether the double press makes sens though, it also delays the single press detection). 
 
@@ -115,9 +115,9 @@ Some of them support auto create when they are set to learn mode.
 
 1. Configuring the FSSA in Homebridge
 
-    1. To figure out the EnoID turn on the confirmation telegrams at the FSSA and activate the *EnOcean Learn* accessory. Monitor the Homebridge log while switching the FSSA using the right button, note the EnOID.
+    1. To figure out the EnOcean ID turn on the confirmation telegrams at the FSSA and activate the *EnOcean Learn* accessory. Monitor the Homebridge log while switching the FSSA using the right button, note the EnOcean ID.
 
-    2. Manually create a device in the Homebridge configuration using the EnOID and EEP `A5-38-08` or `F6-02-01`. Reboot Homebridge. The FSSA should now appear as accessory in Homebridge.
+    2. Manually create a device in the Homebridge configuration using the EnOcean ID and EEP `A5-38-08` or `F6-02-01`. Reboot Homebridge. The FSSA should now appear as accessory in Homebridge.
 
 2. Teach-in Homebridge to the FSSA
 

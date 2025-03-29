@@ -381,7 +381,7 @@ export class EnoGateway {
         // Check if this device is already known
         const info = this.coreGateway.getDeviceInfo(telegram.sender);
         if (info === undefined) {
-          // Teach in this new device. Provide the full config for platform
+          // Teach-in this new device. Provide the full config for platform
           this.log.info(`${message} -> adding device...`);
           this._armedConfig = mscMessage.values.msc.config;
           await this.teachDevice(mscMessage.values.msc.config);

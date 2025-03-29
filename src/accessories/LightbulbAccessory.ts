@@ -87,7 +87,7 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
     }
 
     this._senderId = gateway.getSenderId(this.accessory.context.localSenderIndex!);
-    this.platform.log.info(`${this.accessory.displayName}: assigned sender EnOID ${this._senderId?.toString()}`);
+    this.platform.log.info(`${this.accessory.displayName}: assigned local sender ID ${this._senderId?.toString()}`);
   }
 
   private async Brightness_OnSet(value: CharacteristicValue): Promise<void> {
