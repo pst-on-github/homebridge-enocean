@@ -1,10 +1,11 @@
 # Cheat sheet
 
-## trace serial
 
 ``` bash
 ps -ef | grep homebridge # to get the pid
-sudo strace -p <pid> -ff -e write --trace-path /dev/ttyUSB0 -xx
+sudo strace -ff -e write --trace-path /dev/ttyUSB0 -xx -p <pid>
+# Or combined
+sudo strace -ff -e write --trace-path /dev/ttyUSB0 -xx -p `pgrep homebridge`
 ```
 
 ``` bash
