@@ -48,7 +48,7 @@ comDevice | Path to the EnOcean gateway device. E.g. `/dev/ttyUSB0`. USB300 type
 isLearnSwitchEnabled | Learn Switch. If enabled, the plugin will create a switch accessory (EnOcean Learn) to switch learn/teach-in mode.
 isHistoryServiceEnabled | Enable History Service for Eve App. If enabled, the plugin support the fakegato-history service to support history graphs in the Eve app. 
 
-If you see 'access denied' in the logs, for the gateway device, you might need to add homebridge to the plugdev group (`add user homebridge plugdev` on Raspbian).
+If you see 'access denied' in the logs, for the gateway device, you might need to add the `homebridge` user to the plugdev group (`add user homebridge plugdev` on Raspbian).
 
 ## EnOceanDevice configuration
 
@@ -56,7 +56,7 @@ Property | Description
 -|-
 eep | The EnOcean Equipment Profile (EEP) to be used for this device.
 id | The EnOcean device ID. An eight digit hex number separated by a colon ':'. E.g. `1A:2B:3C:4D`. This number identifies the device uniquely within EnOcean scope.
-name | The name of the device. This will be the initial name when the device appears in homebridge.
+name | The name of the device. This will be the initial name when the device appears in Homebridge.
 manufacturer | The name of the manufacturer of this device. Some manufacturers (like Eltako) support special features.
 model | The name of the model.
 time | <li>Window Covering: the travel time of the blinds in seconds (default 30 s).</li><li>Contact Sensor: this time the contact is open before the status tampered is active.</li></ul>No effect on other accessories.
@@ -83,7 +83,7 @@ Some devices send an indication of their EEP and manufacturer if they are placed
 
 ### Fully Automatic teach-in
 
-Works similar to auto create but requires the a. m. *Learn Switch* accessory set to on first. Then set the device teach/learn mode (works with NodON Roller Shutter actors, D2-05-00 profile and other devices which are capable of sending a teach in message).
+Works similar to auto create but requires the a. m. *Learn Switch* accessory set to on first. Then set the device teach/learn mode (works with NodON Roller Shutter actors, D2-05-00 profile and other devices which are capable of sending a teach-in message).
 
 ### Semi automatic teach-in
 
@@ -93,7 +93,7 @@ Works similar to auto create but requires the a. m. *Learn Switch* accessory set
 
 <TODO>
 
-## Teach in examples
+## Teach-in examples
 
 ### Devices with a teach button (unidirectional sensors):
 
@@ -112,26 +112,26 @@ Some of them support auto create when they are set to learn mode.
 
 #### Eltako FSSA-230V
 
-1. Configuring the FSSA in homebridge
+1. Configuring the FSSA in Homebridge
 
-    1. To figure out the EnoID turn on the confirmation telegrams at the FSSA and activate the *EnOcean Learn* accessory. Monitor the homebridge log while switching the FSSA using the right button, note the EnOID.
+    1. To figure out the EnoID turn on the confirmation telegrams at the FSSA and activate the *EnOcean Learn* accessory. Monitor the Homebridge log while switching the FSSA using the right button, note the EnOID.
 
-    2. Manually create a device in the homebridge configuration using the EnOID and EEP `A5-38-08` or `F6-02-01`. Reboot homebridge. The FSSA should now appear as accessory in homebridge.
+    2. Manually create a device in the Homebridge configuration using the EnOID and EEP `A5-38-08` or `F6-02-01`. Reboot Homebridge. The FSSA should now appear as accessory in Homebridge.
 
-2. Teach-in homebridge to the FSSA
+2. Teach-in Homebridge to the FSSA
 
     1. Set the FSSA to learn mode (left button 1 s, right button 2 times)
     2. Activate the *EnOcean Learn* accessory.
-    3. Click the FSSA accessory. This will send a teach-in message to the FSSA. 
+    3. Click the FSSA accessory in Homebridge. This will send a teach-in message to the FSSA. 
     4. Turn off the *EnOcean Learn* accessory.
-    5. Verify switching the FSSA from homebridge.
+    5. Verify switching the FSSA from Homebridge.
     6. Verify confirmation telegrams are working by switching the FSSA using the right button.
 
 Note: No advantage using the A5 EEP as it does not automatically enable acknowledge telegrams from the socket. They need to be enabled manually.
 
-#### Eltake FSLA-230V 
+#### Eltako FSLA-230V 
 
-Using the A5 EEP automatically enabled the acknowledge telegrams from the socket.
+The Eltako FSLA-230V does nor have any buttons but supports auto create. Set it to lean mode and it should be automatically detected. Acknowledge telegrams from the FSLA will be enabled.
 
 ## Technical details
 
@@ -145,7 +145,7 @@ This plugin does not use the IDs directly but maintains offsets to the base ID o
 
 *fakegato* debug level logging is off by default (it just doesn't get the log instance forwarded, so you won't see more severe messages as well). To enable it mention `homebridge-enocean-fakegato` in the DEBUG environment variable. See *Homebridge > Settings > Startup & Environment > DEBUG*. 
 
-The history is stored in files in the homebridge persistence folder (`/var/lib/homebridge/persist` on Raspian). Filenames consist of the platform name and the EnOcean ID like `EnOceanPlatform.EnOID_11-22-33-44.history.json`.
+The history is stored in files in the Homebridge persistence folder (`/var/lib/homebridge/persist` on Raspian). Filenames consist of the platform name and the EnOcean ID like `EnOceanPlatform.EnOID_11-22-33-44.history.json`.
 
 ## Acknowledgements
 
