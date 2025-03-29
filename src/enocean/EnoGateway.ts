@@ -10,6 +10,7 @@ import { InMemoryDeviceInfoMap } from './InMemoryDeviceInfoMap';
 import { EepParser_D1_Eltako } from '../eepParser/EepParser_D1_Eltako';
 import { Util } from '../util';
 import { ParsedMessage } from '../eepParser/ParsedMessage';
+import { EnoMessageFactory } from './EnoMessageFactory';
 
 type MessageListener = (eepMessage: ParsedMessage) => void
 
@@ -86,7 +87,7 @@ export class EnoGateway {
    * @returns The claimed index, or undefined if the index could not be acquired.
    */
   claimSenderIndex(index: number | undefined): number | undefined {
-    
+
     if (index === undefined) {
       index = this._senderIdManager.acquireNextFreeSemaphore();
     } else {
@@ -148,14 +149,26 @@ export class EnoGateway {
    * 
    * @param accessory The EnOcean accessory to registered
    */
-  async registerEnoAccessory(config: DeviceConfig, eepMessageReceived: MessageListener): Promise<void> {
+  async registerEnoAccessory(config: DeviceConfig, eepMessageReceived: MessageListener, localSenderId?: EnOCore.DeviceId): Promise<void> {
+
+    const info = this.coreGateway.getDeviceInfo(config.devId);
+    if (info === undefined) {
+      throw `'${config.id}' cannot register, call teach-in first.`;
+    }
 
     const link = this._registeredEnoAccessories.get(config.devId.toString())
       || new AccessoryLink(config, eepMessageReceived);
 
     this.ensureEepParser(config.eepId);
     this._registeredEnoAccessories.set(config.devId.toString(), link);
-    this._log.info(`${config.name}: registered accessory EnOID ${config.devId} with EEP ${config.eepId}`);
+    let message = `${config.name}: registered accessory ID ${config.devId} with EEP ${config.eepId}`;
+
+    if (localSenderId !== undefined) {
+      info.localId = localSenderId;
+      message += ` and local ID ${localSenderId}`;
+    }
+
+    this._log.info(message);
   }
 
   /**
@@ -211,7 +224,7 @@ export class EnoGateway {
     if (!fs.existsSync(this.serialPortPath)) {
       throw `${this.serialPortPath}: no such device`;
     }
-    
+
     this._coreGateway = EnOCore.Gateway.connectToSerialPort(this._serialPortPath, new InMemoryDeviceInfoMap());
 
     const maxAttempt = 50;
@@ -277,7 +290,7 @@ export class EnoGateway {
       config.devId,
       config.eepId,
       config.manufacturerId);
-    
+
     if (config.name !== undefined) {
       const info = this.coreGateway.getDeviceInfo(config.devId);
       if (info !== undefined) {
@@ -319,14 +332,33 @@ export class EnoGateway {
    * Return the last configuration found with and MCS telegram.
    * Once this has been read, it will be reset to undefined.
    */
-  public get armedConfig(): DeviceConfig | undefined{
+  public get armedConfig(): DeviceConfig | undefined {
     const config = this._armedConfig;
     this._armedConfig = undefined;
     return config;
   }
-  
+
+  public coreDeviceInfo(): unknown {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const coreKnownDevices = (this.coreGateway as any).knownDevices;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const table3: any[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    coreKnownDevices.forEach((info: EnOCore.DeviceInfo, device: EnOCore.DeviceId) => {
+      table3.push({
+        deviceId: info.deviceId.toString(),
+        localId: info.localId.toString(),
+        manufacturer: EnOCore.Manufacturers[info.manufacturer],
+        teachInMethod: EnOCore.TeachInMethods[info.teachInMethod],
+        label: info.label,
+        eep: info.eep.toString(),
+      });
+    });
+    return table3;
+  }
+
   private _armedConfig: DeviceConfig | undefined;
-  
+
   private readonly mscParser = new EepParser_D1_Eltako();
 
   private async coreGateway_receivedErp1Telegram(telegram: EnOCore.ERP1Telegram): Promise<void> {
@@ -343,17 +375,27 @@ export class EnoGateway {
 
       this.log.info(`RX: ${telegram.sender.toString()} ${this.mscParser.toString(mscMessage.values)}`);
 
+      const message = `Received Eltako teach-in request from '${telegram.sender}'`;
+
       if (mscMessage.values.msc?.config !== undefined) {
         // Check if this device is already known
         const info = this.coreGateway.getDeviceInfo(telegram.sender);
         if (info === undefined) {
           // Teach in this new device. Provide the full config for platform
-          this.log.info(`Adding '${telegram.sender}' to configuration via 4BS teach-in`);
+          this.log.info(`${message} -> adding device...`);
           this._armedConfig = mscMessage.values.msc.config;
           await this.teachDevice(mscMessage.values.msc.config);
         } else {
           // Device already known
-          this.log.warn(`Cannot add (teach-in) '${telegram.sender}': already known as: '${info.label}', remove it first`);
+          this.log.info(message);
+          this.log.info(`${telegram.sender}: is already known as: '${info.label}'`);
+          setTimeout(() => {
+            this.log.info(`Sending learn telegram to '${info.label}' with local ID '${info.localId.toString()}'`);
+            const erp1TeachIn = EnoMessageFactory
+              .new4bsTeachInMessage(
+                info.localId, info.eep, info.manufacturer);
+            this.coreGateway.sendERP1Telegram(erp1TeachIn);
+          }, 3000);
         }
       }
     }

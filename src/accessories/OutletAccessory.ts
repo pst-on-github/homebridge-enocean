@@ -65,19 +65,18 @@ export class OutletAccessory extends EnoAccessory implements IEnoAccessory {
   async setGateway(gateway: EnoGateway): Promise<void> {
     this._gateway = gateway;
 
-    // Register message receiver in the gateway
-    await this._gateway.registerEnoAccessory(this.config, this.EnoGateway_eepMessageReceived.bind(this));
-
     // Allocate new or persisted sender ID
     this.accessory.context.localSenderIndex = gateway
       .claimSenderIndex(this.accessory.context.localSenderIndex);
 
-    if (this.accessory.context.localSenderIndex === undefined) {
+    if (this.accessory.context.localSenderIndex !== undefined) {
+      this._senderId = gateway.getSenderId(this.accessory.context.localSenderIndex);
+    } else {
       this.platform.log.warn('Failed to claim individual sender id. The limit of 128 might be exceeded.');
     }
 
-    this._senderId = gateway.getSenderId(this.accessory.context.localSenderIndex!);
-    this.platform.log.info(`${this.accessory.displayName}: assigned sender EnOID ${this._senderId?.toString()}`);
+    // Register message receiver and senderId in the gateway
+    return this._gateway.registerEnoAccessory(this.config, this.EnoGateway_eepMessageReceived.bind(this), this._senderId);
   }
 
   private async On_OnSet(value: CharacteristicValue): Promise<void> {
