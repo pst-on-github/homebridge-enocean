@@ -45,6 +45,7 @@ Property | Description
 -|-
 name | Platform Name (`EnOcean`)
 comDevice | Path to the EnOcean gateway device. E.g. `/dev/ttyUSB0`. USB300 type EnOcean gateway transceiver. Consider using `/dev/serial/by-id/<device>` on Raspian.
+isAutoCreateEnabled | If enabled, the plugin will react on Eltako teach-in request messages (MSC type) and create and bind some devices automatically (default not enabled). 
 isLearnSwitchEnabled | Learn Switch. If enabled, the plugin will create a switch accessory (EnOcean Learn) to switch learn/teach-in mode.
 isHistoryServiceEnabled | Enable History Service for Eve App. If enabled, the plugin support the fakegato-history service to support history graphs in the Eve app. 
 
