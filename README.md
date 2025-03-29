@@ -59,7 +59,7 @@ id | The EnOcean device ID. An eight digit hex number separated by a colon ':'. 
 name | The name of the device. This will be the initial name when the device appears in homebridge.
 manufacturer | The name of the manufacturer of this device. Some manufacturers (like Eltako) support special features.
 model | The name of the model.
-time | See description in the UI
+time | <li>Window Covering: the travel time of the blinds in seconds (default 30 s).</li><li>Contact Sensor: this time the contact is open before the status tampered is active.</li></ul>No effect on other accessories.
 accessoryKind | Allows to override the created accessory. By default (auto) it is  determined by the EEP.
 
 ## Teach-in
