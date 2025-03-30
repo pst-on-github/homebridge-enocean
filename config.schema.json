@@ -7,7 +7,11 @@
         "type": "object",
         "properties": {
             "devices": {
+                "title": "EnOcean Devices",
+                "type": "array",
+                "description": "List of EnOcean devices to add as accessories.",
                 "items": {
+                    "type": "object",
                     "properties": {
                         "name": {
                             "required": true,
@@ -111,14 +115,10 @@
                             "type": "integer",
                             "maximum": 127,
                             "placeholder": "",
-                            "description": "Offset to the Base ID override (1 to 127)"
+                            "description": "Override the offset to the Base ID (1 to 127). Usually automatically assigned."
                         }
-                    },
-                    "type": "object"
-                },
-                "title": "EnOcean Devices",
-                "description": "List of EnOcean devices to add as accessories.",
-                "type": "array"
+                    }
+                }
             },
             "name": {
                 "title": "Platform Name",
