@@ -34,7 +34,8 @@ describe('EnoMessageFactory', () => {
 
   it('should create a valid ERP1Telegram for switching on', () => {
     const localDeviceId = EnoCore.DeviceId.fromString('01:02:03:04');
-    const erp1 = EnoMessageFactory.new4bsGatewaySwitchingMessage(localDeviceId, true);
+    const erp1 = EnoMessageFactory.new4bsGatewaySwitchingMessage(true);
+    erp1.sender = localDeviceId;
 
     expect(erp1.sender).toEqual(localDeviceId);
     expect(erp1.getDB(0)).toBe(0x09);
@@ -45,7 +46,8 @@ describe('EnoMessageFactory', () => {
 
   it('should create a valid ERP1Telegram for switching off', () => {
     const localDeviceId = EnoCore.DeviceId.fromString('01:02:03:04');
-    const erp1 = EnoMessageFactory.new4bsGatewaySwitchingMessage(localDeviceId, false);
+    const erp1 = EnoMessageFactory.new4bsGatewaySwitchingMessage(false);
+    erp1.sender = localDeviceId;
 
     expect(erp1.sender).toEqual(localDeviceId);
     expect(erp1.getDB(0)).toBe(0x08);

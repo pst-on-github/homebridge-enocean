@@ -211,6 +211,20 @@ export class EnoGateway {
     return await this.coreGateway.sendESP3Packet(esp3);
   }
 
+  async sendERP1TelegramCore(telegram: EnOCore.ERP1Telegram): Promise<EnOCore.SendingResults> {
+
+    const result = await this.coreGateway.sendERP1Telegram(telegram);
+    const message = telegram.toESP3Packet().toString();
+
+    if (result === EnOCore.SendingResults.Success) {
+      this.log.debug(`TX: ${message}`);
+    } else {
+      this.log.warn(`Failed to send ERP1 telegram '${message}': ${EnOCore.SendingResults[result]}`);
+    }
+
+    return result;
+  }
+
   /**
    * This will create the internal EnOcean Core Gateway
    * and connect it to the serial port.
@@ -394,7 +408,7 @@ export class EnoGateway {
             const erp1TeachIn = EnoMessageFactory
               .new4bsTeachInMessage(
                 info.localId, info.eep, info.manufacturer);
-            this.coreGateway.sendERP1Telegram(erp1TeachIn);
+            this.sendERP1TelegramCore(erp1TeachIn);
           }, 3000);
         }
       }

@@ -94,15 +94,16 @@ export class OutletAccessory extends EnoAccessory implements IEnoAccessory {
           erp1 = EnoMessageFactory.new4bsTeachInMessage(
             this._senderId, this.config.eepId, this.config.manufacturerId);
         } else {
-          erp1 = EnoMessageFactory.new4bsGatewaySwitchingMessage(
-            this._senderId, this._stateOn);
+          erp1 = EnoMessageFactory.new4bsGatewaySwitchingMessage(this._stateOn);
         }
       } else if (this.config.eepId.rorg === EnoCore.RORGs.RPS) {
         erp1 = EnoMessageFactory.newRpsMessage(this._senderId, this._stateOn);
       }
 
       if (erp1 !== undefined) {
-        this._gateway.sendERP1Telegram(erp1);
+        erp1.sender = this._senderId;
+        erp1.destination = this.config.devId;
+        await this._gateway.sendERP1TelegramCore(erp1);
       }
     }
   }
@@ -114,7 +115,7 @@ export class OutletAccessory extends EnoAccessory implements IEnoAccessory {
     if (message.values.isOn !== undefined) {
       this._stateOn = (message.values.isOn ?? false) || (message.values.buttons?.includes('B0') ?? false);
       this.accessory.context.on = this._stateOn;
-      this.platform.log.info(`${this.accessory.displayName}: update on=${this._stateOn}`);
+      this.platform.log.info(`${this.accessory.displayName}: UPDATE on ${this._stateOn}`);
       this._service.updateCharacteristic(this.hap.Characteristic.On, this._stateOn);
     }
   }

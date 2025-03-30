@@ -360,7 +360,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
             this.log.info(`Sending teach-in to '${accessory.displayName}' with local ID '${localId.toString()}'`);
             const erp1TeachIn = EnoMessageFactory
               .new4bsTeachInMessage(localId, eepId, manufacturerId);
-            this._enoGateway.sendERP1Telegram(erp1TeachIn);
+            this._enoGateway.sendERP1TelegramCore(erp1TeachIn);
           }, 3000);
 
         } else {

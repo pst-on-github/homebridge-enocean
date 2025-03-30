@@ -31,20 +31,21 @@ export class EnoMessageFactory {
     erp1.setDB(2, ((manufacturer >> 8) & 0x07) | ((eepId.type << 3) & 0xF8));
     erp1.setDB(3, ((eepId.type >> 5) & 0x03) | ((eepId.func << 2) & 0xFC));
 
-    // Lerntelegramm DB3..DB0 muss so aussehen: 0xE0, 0x40, 0x0D, 0x80
+    // Lerntelegramm DB3..DB0 muss so aussehen: 0xE0, 0x40, 0x0D, 0x80 (Eltako)
 
     return erp1;
   }
 
   /**
-   * Gets a new 4BS Central Command Gateway Switching message
-   * @param localDeviceId The sender ID
-   * @returns A valid ERP1Telegram 4BS Central Command Gateway Switching message for the given inputs
+   * Creates a new 4BS (Four Byte Telegram) gateway switching message.
+   *
+   * @param on - A boolean indicating the desired state of the switch.
+   *             `true` for ON (0x09) and `false` for OFF (0x08).
+   * @returns An instance of `EnoCore.ERP1Telegram` representing the switching message.
    */
-  static new4bsGatewaySwitchingMessage(localDeviceId: EnoCore.DeviceId, on: boolean): EnoCore.ERP1Telegram {
+  static new4bsGatewaySwitchingMessage(on: boolean): EnoCore.ERP1Telegram {
 
     const erp1 = new EnoCore.ERP1Telegram({ rorg: EnoCore.RORGs.FOURBS });
-    erp1.sender = localDeviceId;
 
     erp1.setDB(0, on ? 0x09 : 0x08);  // 0x80 = DATA, 0 = LRN
     erp1.setDB(1, 0x00); // DB1 time n. a.
