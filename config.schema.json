@@ -15,24 +15,26 @@
                             "type": "string"
                         },
                         "id": {
-                        "required": true,
-                        "title": "EnOcean ID",
-                            "type": "string"
+                            "required": true,
+                            "title": "EnOcean ID",
+                            "type": "string",
+                            "placeholder": "xx:xx:xx:xx"
                         },
                         "eep": {
                             "required": true,
-                            "title": "EEP",
-                            "type": "string"
+                            "title": "EnOcean Equipment Profile (EEP)",
+                            "type": "string",
+                            "placeholder": "rr-ff-tt"
                         },
                         "model": {
                             "required": false,
-                            "title": "Device Model",
+                            "title": "Model",
                             "type": "string"
                         },
                         "manufacturer": {
-                        "required": false,
-                        "title": "Manufacturer Name",
-                        "type": "string"
+                            "required": false,
+                            "title": "Manufacturer",
+                            "type": "string"
                         },
                         "time": {
                             "required": false,
@@ -45,18 +47,71 @@
                             "required": false,
                             "title": "Accessory Kind Override",
                             "type": "string",
-                            "oneOf":[
-                                {  "title": "Contact Sensor", "enum": ["contactSensor"] },
-                                {  "title": "Leak Sensor", "enum": ["leakSensor"] },
-                                {  "title": "Lightbulb", "enum": ["lightbulb"] },
-                                {  "title": "Motion Sensor", "enum": ["motionSensor"] },
-                                {  "title": "Outlet", "enum": ["outlet"] },
-                                {  "title": "Stateless Programmable Switch", "enum": ["statelessProgrammableSwitch"] },
-                                {  "title": "Switch", "enum": ["switch"] },
-                                {  "title": "Temperature Sensor", "enum": ["temperatureSensor"] },
-                                {  "title": "Window Covering", "enum": ["windowCovering"] }
+                            "oneOf": [
+                                {
+                                    "title": "Contact Sensor",
+                                    "enum": [
+                                        "contactSensor"
+                                    ]
+                                },
+                                {
+                                    "title": "Leak Sensor",
+                                    "enum": [
+                                        "leakSensor"
+                                    ]
+                                },
+                                {
+                                    "title": "Lightbulb",
+                                    "enum": [
+                                        "lightbulb"
+                                    ]
+                                },
+                                {
+                                    "title": "Motion Sensor",
+                                    "enum": [
+                                        "motionSensor"
+                                    ]
+                                },
+                                {
+                                    "title": "Outlet",
+                                    "enum": [
+                                        "outlet"
+                                    ]
+                                },
+                                {
+                                    "title": "Stateless Programmable Switch",
+                                    "enum": [
+                                        "statelessProgrammableSwitch"
+                                    ]
+                                },
+                                {
+                                    "title": "Switch",
+                                    "enum": [
+                                        "switch"
+                                    ]
+                                },
+                                {
+                                    "title": "Temperature Sensor",
+                                    "enum": [
+                                        "temperatureSensor"
+                                    ]
+                                },
+                                {
+                                    "title": "Window Covering",
+                                    "enum": [
+                                        "windowCovering"
+                                    ]
+                                }
                             ],
                             "description": "Allows to override tha accessory type. Useful for e.g. RORG F6 (RPS) telegrams when they should be contact sensors but this cannot be known from the EEP."
+                        },
+                        "localSenderIndex": {
+                            "required": false,
+                            "title": "Local Sender ID Offset",
+                            "type": "integer",
+                            "maximum": 127,
+                            "placeholder": "",
+                            "description": "Offset to the Base ID override (1 to 127)"
                         }
                     },
                     "type": "object"
@@ -67,14 +122,14 @@
             },
             "name": {
                 "title": "Platform Name",
-                "description": "Name of the platform.",
+                "description": "Name of the platform as it appears in the Homebridge logs in square braces.",
                 "default": "EnOcean",
                 "type": "string",
                 "required": true
             },
             "comDevice": {
                 "title": "EnOcean device path",
-                "description": "Path to the EnOcean device.",
+                "description": "Path to the EnOcean transceiver device.",
                 "type": "string",
                 "required": true,
                 "typeahead": {
@@ -87,22 +142,97 @@
             },
             "isAutoCreateEnabled": {
                 "title": "Auto-Create",
-                "description": "If enabled, the plugin will react on Eltako teach-in request messages (MSC type) and create and bind some devices automatically.",
+                "description": "React on Eltako teach-in request messages (MSC type) and create and bind some devices automatically.",
                 "default": false,
                 "type": "boolean"
             },
             "isLearnSwitchEnabled": {
                 "title": "Learn Switch",
-                "description": "If enabled, the plugin will create a switch accessory (EnOcean Learn) to switch learn/teach-in mode.",
+                "description": "Create a switch accessory in Homebridge (EnOcean Learn) to switch learn/teach-in mode.",
                 "default": true,
                 "type": "boolean"
             },
             "isHistoryServiceEnabled": {
-                "title": "Enable History Service for Eve App",
-                "description": "If enabled, the plugin support the fakegato-history service to support history graphs in the Eve app.",
+                "title": "History Service for Eve App",
+                "description": "Use the fakegato-history service to support history graphs in the Eve app.",
                 "default": true,
                 "type": "boolean"
             }
         }
-    }
+    },
+    "layout": [
+        {
+            "type": "fieldset",
+            "title": "EnOcean Devices",
+            "key": "devices",
+            "expandable": false,
+            "expanded": true,
+            "items": [
+                {
+                    "type": "fieldset",
+                    "title": "Device {{ $index }} - {{ value.name || 'New device' }}",
+                    "expandable": true,
+                    "expanded": false,
+                    "items": [
+                        {
+                            "type": "flex",
+                            "flex-flow": "row wrap",
+                            "items": [
+                                "devices[].name",
+                                "devices[].id",
+                                "devices[].eep"
+                            ]
+                        },
+                        {
+                            "type": "flex",
+                            "flex-flow": "row wrap",
+                            "items": [
+                                {
+                                    "type": "flex",
+                                    "flex": "1 1 33.33%",
+                                    "items": [
+                                        "devices[].model"
+                                    ]
+                                },
+                                {
+                                    "type": "flex",
+                                    "flex": "1 1 33.33%",
+                                    "items": [
+                                        "devices[].manufacturer"
+                                    ]
+                                },
+                                {
+                                    "type": "flex",
+                                    "flex": "1 1 33.33%",
+                                    "items": []
+                                }
+                            ]
+                        },
+                        {
+                            "type": "section",
+                            "title": "Advanced Settings",
+                            "expandable": true,
+                            "expanded": false,
+                            "items": [
+                                "devices[].time",
+                                "devices[].accessoryKind",
+                                "devices[].localSenderIndex"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "fieldset",
+            "title": "Platform Settings",
+            "items": [
+                "name",
+                "comDevice",
+                "isAutoCreateEnabled",
+                "isLearnSwitchEnabled",
+                "isHistoryServiceEnabled"
+            ]
+        }
+    ]
 }
