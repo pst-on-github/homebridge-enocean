@@ -17,3 +17,9 @@ jq   # pretty print JSON
 npm publish --tag=beta --access=public
 npm dist-tag add @pst-on-npm/homebridge-enocean@1.m.b-beta.1 latest
 ```
+
+## Complex config schemes layout examples
+
+https://github.com/NorthernMan54/homebridge-alexa/blob/main/config.schema.json
+
+https://github.com/nicoduj/homebridge-harmony/blob/Dynamic-Platform/config.schema.json
