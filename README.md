@@ -7,7 +7,7 @@
 [![verified-by-homebridge](https://badgen.net/badge/Homebridge/not%20verified/red)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 
 
-Integrate EnOcean devices into Homebridge. Still *beta*!
+Integrate EnOcean® devices into Homebridge. Still *beta*!
 
 ## Supported EEPs
 
@@ -62,6 +62,7 @@ manufacturer | The name of the manufacturer of this device. Some manufacturers (
 model | The name of the model.
 time | <li>Window Covering: the travel time of the blinds in seconds (default 30 s).</li><li>Contact Sensor: this time the contact is open before the status tampered is active.</li></ul>No effect on other accessories.
 accessoryKind | Allows to override the created accessory. By default (auto) it is  determined by the EEP.
+localSenderIndex | The offset to the transceiver Base ID to get the local ID. This is usually automatically assigned but can be overwritten here if necessary. See also [Local Sender IDs](#local-sender-ids).
 
 ## Teach-in
 
@@ -136,7 +137,7 @@ The Eltako FSLA-230V does nor have any buttons but supports auto create. Set it 
 
 ## Technical details
 
-### Local sender IDs 
+### Local Sender IDs 
 
 As part of the concept of EnOcean the transceivers emulating different sender by using local sender IDs.
 
