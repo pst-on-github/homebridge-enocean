@@ -250,7 +250,9 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
     let deviceConfig = this.configuredDevicesByUUID.get(uuid);
 
     if (isManualTeachIn && cachedAccessory && deviceConfig) {
+      // ---------------------------------------------------------------------
       // Update existing accessory
+      // ---------------------------------------------------------------------
       try {
         const device = this.enoAccessoryFactory
           .newAccessory(deviceConfig.eep, this, cachedAccessory as PlatformAccessory<EnoAccessoryContext>, deviceConfig);
@@ -267,7 +269,9 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         this.log.warn(`${cachedAccessory.displayName}: failed to update cached accessory. ${error}`);
       }
     } else if (isManualTeachIn && !cachedAccessory && deviceConfig) {
+      // ---------------------------------------------------------------------
       // Create new accessory
+      // ---------------------------------------------------------------------
       const accessory = new this.api.platformAccessory<EnoAccessoryContext>(deviceConfig.name, uuid);
       accessory.context = accessory.context ?? new EnoAccessoryContext();
       if (deviceConfig.localSenderIndex) {
@@ -285,7 +289,9 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         this.log.warn(`${deviceConfig.name}: failed to create accessory. ${error}`);
       }
     } else if (!isManualTeachIn && !cachedAccessory && !deviceConfig) {
+      // ---------------------------------------------------------------------
       // Create new accessory received via teach-in telegram
+      // ---------------------------------------------------------------------
       deviceConfig = new DeviceConfig(
         info.deviceId.toString(),
         info.eep.toString(),
@@ -316,7 +322,9 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         this.log.warn(`${deviceConfig.name}: failed to create new accessory by ${teachInMethod}. ${error}`);
       }
     } else if (isManualTeachIn && !cachedAccessory && !deviceConfig) {
+      // ---------------------------------------------------------------------
       // Create new accessory received via MSC teach-in telegram (ELTAKO)
+      // ---------------------------------------------------------------------
 
       deviceConfig = this._enoGateway.armedConfig;
       if (deviceConfig === undefined) {
@@ -363,7 +371,7 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         this.log.warn(`${deviceConfig.name}: failed to create new accessory by Eltako MSC. ${error}`);
       }
     } else {
-
+      // ---------------------------------------------------------------------
       let message = `${info.deviceId.toString()}: ignoring device while teach-in (${teachInMethod}).`;
 
       if (deviceConfig?.name) {
