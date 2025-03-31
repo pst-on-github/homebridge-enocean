@@ -1,23 +1,26 @@
 #/bin/bash
 
+plugin_name="@pst-on-npm/homebridge-enocean"
+homebridge_dir="/var/lib/homebridge"
 
-#sudo cp -r ../homebridge-enocean/ /var/lib/homebridge/node_modules/@pst-on-github
+install_dir="$homebridge_dir/node_modules/$plugin_name"
 
-sudo rm -rf /var/lib/homebridge/node_modules/homebridge-enocean
+echo "Install to: $install_dir"
+sudo rm -rf $install_dir
 echo REMOVED 
 
-sudo mkdir /var/lib/homebridge/node_modules/homebridge-enocean/
+sudo mkdir -p $install_dir
 
-sudo cp config.schema.json /var/lib/homebridge/node_modules/homebridge-enocean/
-sudo cp LICENSE            /var/lib/homebridge/node_modules/homebridge-enocean/
-sudo cp package.json       /var/lib/homebridge/node_modules/homebridge-enocean/
-sudo cp package-lock.json  /var/lib/homebridge/node_modules/homebridge-enocean/
-sudo cp README.md          /var/lib/homebridge/node_modules/homebridge-enocean/
-sudo cp -r dist            /var/lib/homebridge/node_modules/homebridge-enocean/
-sudo cp -r node_modules    /var/lib/homebridge/node_modules/homebridge-enocean/
+sudo cp config.schema.json $install_dir
+sudo cp LICENSE            $install_dir
+sudo cp package.json       $install_dir
+sudo cp package-lock.json  $install_dir
+sudo cp README.md          $install_dir
+sudo cp -r dist            $install_dir
+sudo cp -r node_modules    $install_dir
 
-sudo chown -R homebridge /var/lib/homebridge/node_modules/homebridge-enocean/
-sudo chgrp -R homebridge /var/lib/homebridge/node_modules/homebridge-enocean/
+sudo chown -R homebridge $install_dir
+sudo chgrp -R homebridge $install_dir
 echo COPIED
 
-ls /var/lib/homebridge/node_modules/homebridge-enocean/
+ls $install_dir
