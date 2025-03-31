@@ -49,7 +49,7 @@ isAutoCreateEnabled | If enabled, the plugin will react on Eltako teach-in reque
 isLearnSwitchEnabled | Learn Switch. If enabled, the plugin will create a switch accessory (EnOcean Learn) to switch learn/teach-in mode.
 isHistoryServiceEnabled | Enable History Service for Eve App. If enabled, the plugin support the fakegato-history service to support history graphs in the Eve app. 
 
-If you see 'access denied' in the logs, for the gateway device, you might need to add the `homebridge` user to the plugdev group (`add user homebridge plugdev` on Raspbian).
+If you see 'access denied' in the logs, for the gateway device, you might need to add the `homebridge` user to the plugdev group (`adduser homebridge plugdev` and `reboot` on Raspbian).
 
 ## EnOceanDevice configuration
 
