@@ -35,3 +35,6 @@ jobs:
           npm audit fix || true
           npm list --outdated
           npm run build
+
+      - name: Run the tests
+        run: npm run test
