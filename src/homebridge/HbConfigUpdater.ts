@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as fs from 'fs/promises';
 import { IDeviceConfig } from './IDeviceConfig';
-import { PLATFORM_NAME } from '../settings';
 
 /**
  * EnOcean Device Configuration
@@ -31,10 +30,10 @@ export class HbConfigUpdater {
     
     const config = await this.readJsonFile();
 
-    const plugin = config.platforms.find((p: any) => p.platform === PLATFORM_NAME);
+    const plugin = config.platforms.find((p: any) => p.platform === this.platformName);
 
     if (plugin === undefined) {
-      throw new Error(`${PLATFORM_NAME}: no such platform in platforms in ${this.configFilePath}`);
+      throw new Error(`${this.platformName}: no such platform in platforms in ${this.configFilePath}`);
     }
 
     if (plugin.devices === undefined) {
