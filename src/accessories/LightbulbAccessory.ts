@@ -100,7 +100,7 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
       let erp1 = undefined;
 
       if (this.config.eepId.rorg === EnoCore.RORGs.FOURBS) {
-        erp1 = EnoMessageFactory.new4bsGatewayDimmingMessage(
+        erp1 = EnoMessageFactory.newFourBSGatewayDimmingMessage(
           this._senderId, this._stateOn, this._brightness);
       }
 
@@ -122,10 +122,10 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
       if (this.config.eepId.rorg === EnoCore.RORGs.FOURBS) {
 
         if (this._gateway.isTeachInMode()) {
-          erp1 = EnoMessageFactory.new4bsTeachInMessage(
+          erp1 = EnoMessageFactory.newFourBSTeachInMessage(
             this._senderId, this.config.eepId, this.config.manufacturerId);
         } else {
-          erp1 = EnoMessageFactory.new4bsGatewayDimmingMessage(
+          erp1 = EnoMessageFactory.newFourBSGatewayDimmingMessage(
             this._senderId, this._stateOn, this._brightness);
         }
       }

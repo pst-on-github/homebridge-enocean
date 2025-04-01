@@ -126,7 +126,7 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
           if (this.config.eepId.rorg === EnoCore.RORGs.FOURBS) {
             // Send Manufacturer specific 4BS message
             const time_s = Math.abs(this._targetPosition - this._currentPosition) / this._travelVelocity;
-            erp1 = EnoMessageFactory.new4bsGatewayBlindsMessageEltako(this._senderId, cmd, time_s);
+            erp1 = EnoMessageFactory.newFourBSGatewayBlindsMessageEltako(this._senderId, cmd, time_s);
 
           } else if (this.config.eepId.rorg === EnoCore.RORGs.VLD && this.config.eepId.func === 0x05) {
             // Blinds Control for position and angle

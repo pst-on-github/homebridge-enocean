@@ -406,7 +406,7 @@ export class EnoGateway {
           setTimeout(() => {
             this.log.info(`Sending learn telegram to '${info.label}' with local ID '${info.localId.toString()}'`);
             const erp1TeachIn = EnoMessageFactory
-              .new4bsTeachInMessage(
+              .newFourBSTeachInMessage(
                 info.localId, info.eep, info.manufacturer);
             this.sendERP1TelegramCore(erp1TeachIn);
           }, 3000);

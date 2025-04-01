@@ -91,13 +91,13 @@ export class OutletAccessory extends EnoAccessory implements IEnoAccessory {
       if (this.config.eepId.rorg === EnoCore.RORGs.FOURBS) {
 
         if (this._gateway.isTeachInMode()) {
-          erp1 = EnoMessageFactory.new4bsTeachInMessage(
+          erp1 = EnoMessageFactory.newFourBSTeachInMessage(
             this._senderId, this.config.eepId, this.config.manufacturerId);
         } else {
-          erp1 = EnoMessageFactory.new4bsGatewaySwitchingMessage(this._stateOn);
+          erp1 = EnoMessageFactory.newFourBSGatewaySwitchingMessage(this._stateOn);
         }
       } else if (this.config.eepId.rorg === EnoCore.RORGs.RPS) {
-        erp1 = EnoMessageFactory.newRpsMessage(this._senderId, this._stateOn);
+        erp1 = EnoMessageFactory.newRpsOnMessage(this._senderId, this._stateOn);
       }
 
       if (erp1 !== undefined) {
