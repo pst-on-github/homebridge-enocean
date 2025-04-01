@@ -1,171 +1,121 @@
 import { HbConfigUpdater } from '../../homebridge/HbConfigUpdater';
 import { IDeviceConfig } from '../../homebridge/IDeviceConfig';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 
-jest.mock('fs');
+jest.mock('fs/promises');
 
-describe('ConfigWriter', () => {
-  const configFilePath = '/path/to/config.json';
-  const platformName = 'EnOcean';
-  let configWriter: HbConfigUpdater;
+describe('HbConfigUpdater', () => {
+  const mockConfigFilePath = '/path/to/config.json';
+  const mockPlatformName = 'TestPlatform';
+  const mockConfig = {
+    platforms: [
+      {
+        platform: mockPlatformName,
+        devices: [],
+      },
+    ],
+  };
+
+  let hbConfigUpdater: HbConfigUpdater;
 
   beforeEach(() => {
-    configWriter = new HbConfigUpdater(configFilePath, platformName);
+    hbConfigUpdater = new HbConfigUpdater(mockConfigFilePath, mockPlatformName);
+    jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
+  describe('addDeviceToHomebridgeConfig', () => {
+    it('should add a new device to the platform configuration', async () => {
+      const newDevice: IDeviceConfig = {
+        name: 'Test Device',
+        id: '12345',
+        eep: 'A5-02-05',
+        model: 'Test Model',
+        manufacturer: 'Test Manufacturer',
+      };
 
-  it('should add a new device to the Homebridge config', () => {
-    const mockConfig = {
-      platforms: [
-        {
-          platform: 'EnOcean',
-          devices: [],
-        },
-      ],
-    };
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockConfig));
+      (fs.writeFile as jest.Mock).mockResolvedValue(undefined);
 
-    const newDevice: IDeviceConfig = {
-      id: 'device1',
-      eep: 'a5-02-05',
-      name: 'Test Device',
-      model: 'Model1',
-      manufacturer: 'Manufacturer1',
-    };
+      await hbConfigUpdater.addDeviceToHomebridgeConfig(newDevice);
 
-    (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(mockConfig));
-    const writeFileSyncMock = fs.writeFileSync as jest.Mock;
-
-    configWriter.addDeviceToHomebridgeConfig(newDevice);
-
-    expect(writeFileSyncMock).toHaveBeenCalledWith(
-      configFilePath,
-      JSON.stringify({
-        platforms: [
+      expect(fs.readFile).toHaveBeenCalledWith(mockConfigFilePath, 'utf-8');
+      expect(fs.writeFile).toHaveBeenCalledWith(
+        mockConfigFilePath,
+        JSON.stringify(
           {
-            platform: 'EnOcean',
-            devices: [newDevice],
-          },
-        ],
-      }, null, 2),
-      'utf-8',
-    );
-  });
-
-  it('should throw an error if EnOcean platform is not found', () => {
-    const mockConfig = {
-      platforms: [
-        {
-          platform: 'OtherPlatform',
-          devices: [],
-        },
-      ],
-    };
-
-    const newDevice: IDeviceConfig = {
-      id: 'device1',
-      eep: 'a5-02-05',
-      name: 'Test Device',
-      model: 'Model1',
-      manufacturer: 'Manufacturer1',
-    };
-
-    (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(mockConfig));
-
-    expect(() => {
-      configWriter.addDeviceToHomebridgeConfig(newDevice);
-    }).toThrow('EnOcean: no such platform in config');
-  });
-
-  it('should initialize devices array if it is undefined', () => {
-    const mockConfig = {
-      platforms: [
-        {
-          platform: 'EnOcean',
-        },
-      ],
-    };
-
-    const newDevice: IDeviceConfig = {
-      id: 'device1',
-      eep: 'a5-02-05',
-      name: 'Test Device',
-      model: 'Model1',
-      manufacturer: 'Manufacturer1',
-    };
-
-    (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(mockConfig));
-    const writeFileSyncMock = fs.writeFileSync as jest.Mock;
-
-    configWriter.addDeviceToHomebridgeConfig(newDevice);
-
-    expect(writeFileSyncMock).toHaveBeenCalledWith(
-      configFilePath,
-      JSON.stringify({
-        platforms: [
-          {
-            platform: 'EnOcean',
-            devices: [newDevice],
-          },
-        ],
-      }, null, 2),
-      'utf-8',
-    );
-  });
-
-  it('should add a new device to an existing devices array', () => {
-    const mockConfig = {
-      platforms: [
-        {
-          platform: 'EnOcean',
-          devices: [
-            {
-              id: 'existingDevice',
-              eep: 'a5-02-05',
-              name: 'Existing Device',
-              model: 'Model2',
-              manufacturer: 'Manufacturer2',
-            },
-          ],
-        },
-      ],
-    };
-
-    const newDevice: IDeviceConfig = {
-      id: 'device1',
-      eep: 'a5-02-05',
-      name: 'Test Device',
-      model: 'Model1',
-      manufacturer: 'Manufacturer1',
-    };
-
-    (fs.readFileSync as jest.Mock).mockReturnValue(JSON.stringify(mockConfig));
-    const writeFileSyncMock = fs.writeFileSync as jest.Mock;
-
-    configWriter.addDeviceToHomebridgeConfig(newDevice);
-
-    expect(writeFileSyncMock).toHaveBeenCalledWith(
-      configFilePath,
-      JSON.stringify({
-        platforms: [
-          {
-            platform: 'EnOcean',
-            devices: [
+            platforms: [
               {
-                id: 'existingDevice',
-                eep: 'a5-02-05',
-                name: 'Existing Device',
-                model: 'Model2',
-                manufacturer: 'Manufacturer2',
+                platform: mockPlatformName,
+                devices: [newDevice],
               },
-              newDevice,
             ],
           },
+          null,
+          2,
+        ),
+        'utf-8',
+      );
+    });
+
+    it('should throw an error if the platform is not found', async () => {
+      const invalidConfig = { platforms: [] };
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify(invalidConfig));
+
+      const newDevice: IDeviceConfig = {
+        name: 'Test Device',
+        id: '12345',
+        eep: 'A5-02-05',
+        model: 'Test Model',
+        manufacturer: 'Test Manufacturer',
+      };
+
+      await expect(hbConfigUpdater.addDeviceToHomebridgeConfig(newDevice)).rejects.toThrow(
+        `${mockPlatformName}: no such platform in platforms in ${mockConfigFilePath}`,
+      );
+
+      expect(fs.readFile).toHaveBeenCalledWith(mockConfigFilePath, 'utf-8');
+      expect(fs.writeFile).not.toHaveBeenCalled();
+    });
+
+    it('should initialize the devices array if it is undefined', async () => {
+      const configWithoutDevices = {
+        platforms: [
+          {
+            platform: mockPlatformName,
+          },
         ],
-      }, null, 2),
-      'utf-8',
-    );
+      };
+
+      const newDevice: IDeviceConfig = {
+        name: 'Test Device',
+        id: '12345',
+        eep: 'A5-02-05',
+        model: 'Test Model',
+        manufacturer: 'Test Manufacturer',
+      };
+
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify(configWithoutDevices));
+      (fs.writeFile as jest.Mock).mockResolvedValue(undefined);
+
+      await hbConfigUpdater.addDeviceToHomebridgeConfig(newDevice);
+
+      expect(fs.readFile).toHaveBeenCalledWith(mockConfigFilePath, 'utf-8');
+      expect(fs.writeFile).toHaveBeenCalledWith(
+        mockConfigFilePath,
+        JSON.stringify(
+          {
+            platforms: [
+              {
+                platform: mockPlatformName,
+                devices: [newDevice],
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        'utf-8',
+      );
+    });
   });
 });

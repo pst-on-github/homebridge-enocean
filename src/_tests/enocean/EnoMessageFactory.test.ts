@@ -8,7 +8,7 @@ describe('EnoMessageFactory', () => {
       const eepId = EnoCore.EEPId.fromTriple(0xA5, 0x01, 0x01); // valid func and type
       const manufacturer = 0x123;
 
-      const erp1 = EnoMessageFactory.new4bsTeachInMessage(localDeviceId, eepId, manufacturer);
+      const erp1 = EnoMessageFactory.newFourBSTeachInMessage(localDeviceId, eepId, manufacturer);
 
       expect(erp1.sender).toEqual(localDeviceId);
       expect(erp1.getDB(0)).toBe(0x80);
@@ -22,7 +22,7 @@ describe('EnoMessageFactory', () => {
       const eepId = EnoCore.EEPId.fromTriple(0xA5, 0x38, 0x08); // valid func and type
       const manufacturer = EnoCore.Manufacturers.ELTAKO;
 
-      const erp1 = EnoMessageFactory.new4bsTeachInMessage(localDeviceId, eepId, manufacturer);
+      const erp1 = EnoMessageFactory.newFourBSTeachInMessage(localDeviceId, eepId, manufacturer);
 
       expect(erp1.sender).toEqual(localDeviceId);
       expect(erp1.getDB(0)).toBe(0x80); // LRN bit (0x08) is 0 -> teach-in, 0x80 = LRN TYPE 1 = provide manufacturer ID and EPP
@@ -34,7 +34,7 @@ describe('EnoMessageFactory', () => {
 
   it('should create a valid ERP1Telegram for switching on', () => {
     const localDeviceId = EnoCore.DeviceId.fromString('01:02:03:04');
-    const erp1 = EnoMessageFactory.new4bsGatewaySwitchingMessage(true);
+    const erp1 = EnoMessageFactory.newFourBSGatewaySwitchingMessage(true);
     erp1.sender = localDeviceId;
 
     expect(erp1.sender).toEqual(localDeviceId);
@@ -46,7 +46,7 @@ describe('EnoMessageFactory', () => {
 
   it('should create a valid ERP1Telegram for switching off', () => {
     const localDeviceId = EnoCore.DeviceId.fromString('01:02:03:04');
-    const erp1 = EnoMessageFactory.new4bsGatewaySwitchingMessage(false);
+    const erp1 = EnoMessageFactory.newFourBSGatewaySwitchingMessage(false);
     erp1.sender = localDeviceId;
 
     expect(erp1.sender).toEqual(localDeviceId);
@@ -58,7 +58,7 @@ describe('EnoMessageFactory', () => {
 
   it('should create a valid ERP1Telegram for RPS message with on state', () => {
     const localDeviceId = EnoCore.DeviceId.fromString('01:02:03:04');
-    const erp1 = EnoMessageFactory.newRpsMessage(localDeviceId, true);
+    const erp1 = EnoMessageFactory.newRpsOnMessage(localDeviceId, true);
 
     expect(erp1.sender).toEqual(localDeviceId);
     expect(erp1.getDB(0)).toBe(0x50); // DB0.4 Pressed bit for on state
@@ -66,7 +66,7 @@ describe('EnoMessageFactory', () => {
 
   it('should create a valid ERP1Telegram for RPS message with off state', () => {
     const localDeviceId = EnoCore.DeviceId.fromString('01:02:03:04');
-    const erp1 = EnoMessageFactory.newRpsMessage(localDeviceId, false);
+    const erp1 = EnoMessageFactory.newRpsOnMessage(localDeviceId, false);
 
     expect(erp1.sender).toEqual(localDeviceId);
     expect(erp1.getDB(0)).toBe(0x70); // DB0.4 Pressed bit for off state
