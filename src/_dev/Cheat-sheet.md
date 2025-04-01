@@ -1,17 +1,23 @@
 # Cheat sheet
 
+## Trace transmitted messages
 
 ``` bash
 ps -ef | grep homebridge # to get the pid
 sudo strace -ff -e write --trace-path /dev/ttyUSB0 -xx -p <pid>
-# Or combined
-sudo strace -ff -e write --trace-path /dev/ttyUSB0 -xx -p `pgrep homebridge`
+
+# Or combined to trace transmitted messages
+sudo strace -ff -e write --trace-path /dev/ttyUSB0 -xx -p `pgrep homebridge:`
 ```
+
+## Other
 
 ``` bash
 lsof # list open files
 jq   # pretty print JSON
 ```
+
+## npm
 
 ``` bash
 npm publish --tag=beta --access=public

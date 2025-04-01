@@ -128,7 +128,7 @@ export class EnoMessageFactory {
   }
 
   /**
-   * Builds a D!-05 message to control blinds
+   * Builds a D2-05 message to control blinds
    * 
    * @param sourceId the local sender id
    * @param cmd           1 = goto position, 2 = stop, 3 = query position & angle, 4 = replay pos & angle, 5 = set parameter 
