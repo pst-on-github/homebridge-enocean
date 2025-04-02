@@ -6,9 +6,8 @@ import * as EnoCore from 'enocean-core';
 
 import { IEnoAccessory } from './IEnoAccessory';
 import { DeviceConfig } from '../homebridge/DeviceConfig';
-import { EnoGateway } from '../enocean/EnoGateway';
 import { InformationServiceHelper } from '../serviceHelper/InformationServiceHelper';
-import { EnoAccessory } from './EnoAccessory';
+import { EnoTransmittingAccessory } from './EnoTransmittingAccessory';
 import { EnoAccessoryContext } from '../homebridge/EnoAccessoryContext';
 import { EnoMessageFactory } from '../enocean/EnoMessageFactory';
 import { ParsedMessage } from '../eepParser/ParsedMessage';
@@ -18,10 +17,8 @@ import { ParsedMessage } from '../eepParser/ParsedMessage';
  * An instance of this class is created for each temperature sensor
  * Creates a relative humidity service as well depending on EEP
  */
-export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccessory {
+export class WindowCoveringAccessory extends EnoTransmittingAccessory implements IEnoAccessory {
 
-  private _gateway: EnoGateway | undefined;
-  private _senderId: EnoCore.DeviceId | undefined;
   private _service: Service;
 
   private _interval: NodeJS.Timeout | undefined;
@@ -85,25 +82,6 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
       .onSet((value) => this.targetPosition_onSet(value));
   }
 
-  async setGateway(gateway: EnoGateway): Promise<void> {
-    this._gateway = gateway;
-
-    // Register message receiver in the gateway
-    await this._gateway.registerEnoAccessory(this.config, this.EnoGateway_eepMessageReceived.bind(this));
-
-    // Allocate new or persisted sender ID
-
-    this.accessory.context.localSenderIndex = gateway
-      .claimSenderIndex(this.accessory.context.localSenderIndex);
-
-    if (this.accessory.context.localSenderIndex === undefined) {
-      this.platform.log.warn('Failed to claim individual sender id. The limit of 128 might be exceeded.');
-    }
-
-    this._senderId = gateway.getSenderId(this.accessory.context.localSenderIndex!);
-    this.platform.log.info(`${this.accessory.displayName}: assigned local sender ID ${this._senderId?.toString()}`);
-  }
-
   private _sendTimeout: NodeJS.Timeout | undefined;
 
   private async targetPosition_onSet(value: CharacteristicValue): Promise<void> {
@@ -125,17 +103,22 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
 
           if (this.config.eepId.rorg === EnoCore.RORGs.FOURBS) {
             // Send Manufacturer specific 4BS message
-            const time_s = Math.abs(this._targetPosition - this._currentPosition) / this._travelVelocity;
-            erp1 = EnoMessageFactory.newFourBSGatewayBlindsMessageEltako(this._senderId, cmd, time_s);
+            let v = this._travelVelocity;
+            if (this._targetPosition === 100 || this._targetPosition === 0) {
+              // Reduce the travel velocity by 5 % if targeting the end-points
+              // Results in longer travel time, so the endpoints will securely be reached
+              v *= 0.95;
+            }
+            const time_s = Math.abs(this._targetPosition - this._currentPosition) / v;
+            erp1 = EnoMessageFactory.newFourBSGatewayBlindsMessageEltako(cmd, time_s);
 
           } else if (this.config.eepId.rorg === EnoCore.RORGs.VLD && this.config.eepId.func === 0x05) {
             // Blinds Control for position and angle
-            erp1 = EnoMessageFactory.newVldBlindsControlMessage(
-              this._senderId, this.config.devId, 1, 100 - this._targetPosition, 127);
+            erp1 = EnoMessageFactory.newVldBlindsControlMessage(1, 100 - this._targetPosition, 127);
           }
 
           if (erp1 !== undefined) {
-            this._gateway.sendERP1Telegram(erp1);
+            this.sendErp1Telegram(erp1);
           }
         }
 
@@ -143,7 +126,7 @@ export class WindowCoveringAccessory extends EnoAccessory implements IEnoAccesso
     }
   }
 
-  private EnoGateway_eepMessageReceived(message: ParsedMessage): void {
+  protected EnoGateway_eepMessageReceived(message: ParsedMessage): void {
 
     this.platform.log.debug(`${this.accessory.displayName}: ${message.toString()}`);
 
