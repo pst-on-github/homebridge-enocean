@@ -7,10 +7,9 @@ import * as EnoCore from 'enocean-core';
 import { IEnoAccessory } from './IEnoAccessory';
 import { DeviceConfig } from '../homebridge/DeviceConfig';
 import { EnoMessageFactory } from '../enocean/EnoMessageFactory';
-import { EnoGateway } from '../enocean/EnoGateway';
 import { InformationServiceHelper } from '../serviceHelper/InformationServiceHelper';
 import { EnoAccessoryContext } from '../homebridge/EnoAccessoryContext';
-import { EnoAccessory } from './EnoAccessory';
+import { EnoTransmittingAccessory } from './EnoTransmittingAccessory';
 import { ParsedMessage } from '../eepParser/ParsedMessage';
 
 /**
@@ -18,10 +17,8 @@ import { ParsedMessage } from '../eepParser/ParsedMessage';
  * An instance of this class is created for each temperature sensor
  * Creates a relative humidity service as well depending on EEP
  */
-export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
+export class LightbulbAccessory extends EnoTransmittingAccessory implements IEnoAccessory {
 
-  private _gateway: EnoGateway | undefined;
-  private _senderId: EnoCore.DeviceId | undefined;
   private _service: Service;
 
   private _stateOn: boolean;
@@ -72,24 +69,6 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
     }
   }
 
-  async setGateway(gateway: EnoGateway): Promise<void> {
-    this._gateway = gateway;
-
-    // Register message receiver in the gateway
-    await this._gateway.registerEnoAccessory(this.config, this.EnoGateway_eepMessageReceived.bind(this));
-
-    // Allocate new or persisted sender ID
-    this.accessory.context.localSenderIndex = gateway
-      .claimSenderIndex(this.accessory.context.localSenderIndex);
-
-    if (this.accessory.context.localSenderIndex === undefined) {
-      this.platform.log.warn('Failed to claim individual sender id. The limit of 128 might be exceeded.');
-    }
-
-    this._senderId = gateway.getSenderId(this.accessory.context.localSenderIndex!);
-    this.platform.log.info(`${this.accessory.displayName}: assigned local sender ID ${this._senderId?.toString()}`);
-  }
-
   private async Brightness_OnSet(value: CharacteristicValue): Promise<void> {
     this.platform.log.info(`${this.accessory.displayName}: SET brightness ${value}`);
 
@@ -100,12 +79,11 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
       let erp1 = undefined;
 
       if (this.config.eepId.rorg === EnoCore.RORGs.FOURBS) {
-        erp1 = EnoMessageFactory.newFourBSGatewayDimmingMessage(
-          this._senderId, this._stateOn, this._brightness);
+        erp1 = EnoMessageFactory.newFourBSGatewayDimmingMessage(this._stateOn, this._brightness);
       }
 
       if (erp1 !== undefined) {
-        this._gateway.sendERP1Telegram(erp1);
+        this.sendErp1Telegram(erp1);
       }
     }
   }
@@ -125,18 +103,17 @@ export class LightbulbAccessory extends EnoAccessory implements IEnoAccessory {
           erp1 = EnoMessageFactory.newFourBSTeachInMessage(
             this._senderId, this.config.eepId, this.config.manufacturerId);
         } else {
-          erp1 = EnoMessageFactory.newFourBSGatewayDimmingMessage(
-            this._senderId, this._stateOn, this._brightness);
+          erp1 = EnoMessageFactory.newFourBSGatewayDimmingMessage(this._stateOn, this._brightness);
         }
       }
 
       if (erp1 !== undefined) {
-        this._gateway.sendERP1Telegram(erp1);
+        await this.sendErp1Telegram(erp1);
       }
     }
   }
 
-  private EnoGateway_eepMessageReceived(message: ParsedMessage): void {
+  protected EnoGateway_eepMessageReceived(message: ParsedMessage): void {
 
     this.platform.log.debug(`${this.accessory.displayName}: ${message.toString()}`);
 

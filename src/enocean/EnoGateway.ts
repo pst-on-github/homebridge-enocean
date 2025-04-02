@@ -171,47 +171,7 @@ export class EnoGateway {
     this._log.info(message);
   }
 
-  /**
-   * Sends an ERP1 telegram to the EnOcean gateway.
-   *
-   * @param telegram - The ERP1 telegram to be sent.
-   * @returns A promise that resolves to the result of sending the telegram.
-   *
-   * The ERP1 telegram consists of:
-   * - The first byte of data representing the RORG (telegram type).
-   * - The user data.
-   * - The sender ID and status.
-   *
-   * The method constructs the data buffer by concatenating the RORG, user data, sender ID, and status.
-   * It then creates an ESP3 packet with the constructed data and sends it using the core gateway.
-   */
-  async sendERP1Telegram(telegram: EnOCore.ERP1Telegram): Promise<EnOCore.SendingResults> {
-
-    // first byte of data is rorg ...
-    const data = Buffer.alloc(6 + telegram.userData.length);
-    data.writeUIntBE(telegram.rorg, 0, 1);
-
-    // ... followed by user data ...
-    telegram.userData.copy(data, 1);
-
-    // ... and finally by sender id and status
-    const senderOffset = 1 + telegram.userData.length;
-    data.writeUIntBE(telegram.sender.toNumber(), senderOffset, 4);
-    data.writeUInt8(telegram.status, senderOffset + 4);
-
-    // No optional data for the time being
-    const optionalData = Buffer.alloc(0);
-    // optionalData.writeUIntBE(this.subTelNum, 0, 1)
-    // optionalData.writeUIntBE(this.destination.toNumber(), 1, 4)
-    // optionalData.writeUIntBE(this.signalStrength, 5, 1)
-    // optionalData.writeUIntBE(this.securityLevel, 6, 1)
-
-    const esp3 = new EnOCore.ESP3Packet(EnOCore.ESP3PacketTypes.RadioERP1, data, optionalData);
-
-    return await this.coreGateway.sendESP3Packet(esp3);
-  }
-
-  async sendERP1TelegramCore(telegram: EnOCore.ERP1Telegram): Promise<EnOCore.SendingResults> {
+  async sendErp1Telegram(telegram: EnOCore.ERP1Telegram): Promise<EnOCore.SendingResults> {
 
     const result = await this.coreGateway.sendERP1Telegram(telegram);
     const message = telegram.toESP3Packet().toString();
@@ -408,7 +368,7 @@ export class EnoGateway {
             const erp1TeachIn = EnoMessageFactory
               .newFourBSTeachInMessage(
                 info.localId, info.eep, info.manufacturer);
-            this.sendERP1TelegramCore(erp1TeachIn);
+            this.sendErp1Telegram(erp1TeachIn);
           }, 3000);
         }
       }

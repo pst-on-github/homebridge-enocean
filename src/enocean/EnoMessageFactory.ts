@@ -10,10 +10,9 @@ export class EnoMessageFactory {
    * @param time_s - The duration of the command in seconds.
    * @returns An instance of `EnoCore.ERP1Telegram` representing the constructed message.
    */
-  static newFourBSGatewayBlindsMessageEltako(localDeviceId: EnoCore.DeviceId, cmd: number, time_s: number): EnoCore.ERP1Telegram {
+  static newFourBSGatewayBlindsMessageEltako(cmd: number, time_s: number): EnoCore.ERP1Telegram {
 
     const erp1 = new EnoCore.ERP1Telegram({ rorg: EnoCore.RORGs.FOURBS });
-    erp1.sender = localDeviceId;
 
     // DB0_Bit5 0x20 = 1: Lernmodus aktivieren, 3x innerhalb 2s = löschen GFVS-ID
     // DB0_Bit3 0x08 = LRN Button (0 = Lerntelegramm, 1 = Datentelegramm)
@@ -41,10 +40,9 @@ export class EnoMessageFactory {
    * @param brightness - The brightness level as a percentage (0-100). Values outside this range will be clamped.
    * @returns An instance of `EnoCore.ERP1Telegram` representing the dimming message.
    */
-  static newFourBSGatewayDimmingMessage(localDeviceId: EnoCore.DeviceId, on: boolean, brightness: number): EnoCore.ERP1Telegram {
+  static newFourBSGatewayDimmingMessage(on: boolean, brightness: number): EnoCore.ERP1Telegram {
     
     const erp1 = new EnoCore.ERP1Telegram({ rorg: EnoCore.RORGs.FOURBS });
-    erp1.sender = localDeviceId;
   
     /*
      * Data_byte3 = 0x02        DIMMING CMD
@@ -126,10 +124,9 @@ export class EnoMessageFactory {
    *             `true` represents the "On" state, and `false` represents the "Off" state.
    * @returns An instance of `EnoCore.ERP1Telegram` representing the RPS "On" message.
    */
-  static newRpsOnMessage(localDeviceId: EnoCore.DeviceId, on: boolean): EnoCore.ERP1Telegram {
+  static newRpsOnMessage(on: boolean): EnoCore.ERP1Telegram {
 
     const erp1 = new EnoCore.ERP1Telegram({ rorg: EnoCore.RORGs.RPS, userDataSize: 1 });
-    erp1.sender = localDeviceId;
 
     erp1.setDB(0, on ? 0x50 : 0x70); // DB0.4 Pressed bit
 
@@ -144,17 +141,9 @@ export class EnoMessageFactory {
    * @param angle         0-100, 127 = do not change
    * @returns A ready build ERP1 message
    */
-  static newVldBlindsControlMessage(sourceId: EnoCore.DeviceId, destinationId: EnoCore.DeviceId,
-    cmd: number = 1, position: number = 127, angle: number = 127): EnoCore.ERP1Telegram {
+  static newVldBlindsControlMessage(cmd: number = 1, position: number = 127, angle: number = 127): EnoCore.ERP1Telegram {
 
     const erp1 = new EnoCore.ERP1Telegram({ rorg: EnoCore.RORGs.VLD, userDataSize: 4 });
-    erp1.sender = sourceId;
-
-    erp1.subTelNum = 0x03; // SubTelNum 0 = broadcast
-    erp1.destination = destinationId; // Destination 0 = broadcast
-    erp1.signalStrength = 0xFF;
-    erp1.securityLevel = 0x00; // Security level 0 = no security
-    erp1.status = 0x00; // Status 0 = no error
 
     const channel = 0x0F; // Channel all
     const lock = 0x00;    // Lock 0 = do not change
