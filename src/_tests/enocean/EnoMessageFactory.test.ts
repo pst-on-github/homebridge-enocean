@@ -113,11 +113,132 @@ describe('EnoMessageFactory', () => {
       expect(erp1.getDB(3)).toBe(position); // Blinds position
     });
 
-    it('should create a valid ERP1Telegram for blinds control with default values', () => {
-      const erp1 = EnoMessageFactory.newVldBlindsControlMessage();
+    it('should create a valid ERP1Telegram for blinds control with only position defined', () => {
+      const cmd = 1; // goto position
+      const position = 75; // 75%
+      const angle = undefined; // Do not change angle
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
 
-      expect(erp1.getDB(0)).toBe((0x0F << 4) | 1); // Default command: goto position
-      expect(erp1.getDB(1)).toBe(0x00); // Default repositioning mode & lock
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
+      expect(erp1.getDB(2)).toBe(127); // Default angle: do not change
+      expect(erp1.getDB(3)).toBe(position); // Blinds position
+    });
+
+    it('should create a valid ERP1Telegram for blinds control with only angle defined', () => {
+      const cmd = 1; // goto position
+      const position = undefined; // Do not change position
+      const angle = 45; // 45%
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
+      expect(erp1.getDB(2)).toBe(angle); // Slat angle
+      expect(erp1.getDB(3)).toBe(127); // Default position: do not change
+    });
+
+    it('should clamp angle and position values to valid range', () => {
+      const cmd = 1; // goto position
+      const position = 150; // Invalid position, should be clamped to 100
+      const angle = -10; // Invalid angle, should be clamped to 0
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
+      expect(erp1.getDB(2)).toBe(0); // Clamped angle
+      expect(erp1.getDB(3)).toBe(100); // Clamped position
+    });
+
+    it('should create a valid ERP1Telegram for blinds control with stop command', () => {
+      const cmd = 2; // stop
+      const position = 60; // 60%
+      const angle = 40; // 40%
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
+      expect(erp1.getDB(2)).toBe(angle); // Slat angle
+      expect(erp1.getDB(3)).toBe(position); // Blinds position
+    });
+
+    it('should throw an error if cmd=1 and both position and angle are undefined', () => {
+      const cmd = 1; // goto position
+      const position = undefined;
+      const angle = undefined;
+
+      expect(() => {
+        EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+      }).toThrowError('newVldBlindsControlMessage: cmd=1 requires position or angle to be set');
+    });
+
+    it('should create a valid ERP1Telegram for blinds control with cmd=2 and position defined', () => {
+      const cmd = 2; // stop
+      const position = 80; // 80%
+      const angle = undefined; // Do not change angle
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
+      expect(erp1.getDB(2)).toBe(127); // Default angle: do not change
+      expect(erp1.getDB(3)).toBe(Math.max(0, Math.min(100, position))); // Clamped position
+    });
+
+    it('should create a valid ERP1Telegram for blinds control with cmd=2 and angle defined', () => {
+      const cmd = 2; // stop
+      const position = undefined; // Do not change position
+      const angle = 60; // 60%
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
+      expect(erp1.getDB(2)).toBe(Math.max(0, Math.min(100, angle))); // Clamped angle
+      expect(erp1.getDB(3)).toBe(127); // Default position: do not change
+    });
+
+    it('should create a valid ERP1Telegram for blinds control with cmd=2 and both position and angle defined', () => {
+      const cmd = 2; // stop
+      const position = 90; // 90%
+      const angle = 45; // 45%
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
+      expect(erp1.getDB(2)).toBe(Math.max(0, Math.min(100, angle))); // Clamped angle
+      expect(erp1.getDB(3)).toBe(Math.max(0, Math.min(100, position))); // Clamped position
+    });
+
+    it('should create a valid ERP1Telegram for blinds control with cmd=3 (query position & angle)', () => {
+      const cmd = 3; // query position & angle
+      const position = undefined; // Do not change position
+      const angle = undefined; // Do not change angle
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
+      expect(erp1.getDB(2)).toBe(127); // Default angle: do not change
+      expect(erp1.getDB(3)).toBe(127); // Default position: do not change
+    });
+
+    it('should create a valid ERP1Telegram for blinds control with cmd=4 (replay position & angle)', () => {
+      const cmd = 4; // replay position & angle
+      const position = 70; // 70%
+      const angle = 20; // 20%
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
+      expect(erp1.getDB(2)).toBe(Math.max(0, Math.min(100, angle))); // Clamped angle
+      expect(erp1.getDB(3)).toBe(Math.max(0, Math.min(100, position))); // Clamped position
+    });
+
+    it('should create a valid ERP1Telegram for blinds control with cmd=5 (set parameter)', () => {
+      const cmd = 5; // set parameter
+      const position = undefined; // Do not change position
+      const angle = undefined; // Do not change angle
+      const erp1 = EnoMessageFactory.newVldBlindsControlMessage(cmd, position, angle);
+
+      expect(erp1.getDB(0)).toBe((0x0F << 4) | (cmd & 0x0F)); // Channel all & command
+      expect(erp1.getDB(1)).toBe(0x00); // Repositioning mode & lock
       expect(erp1.getDB(2)).toBe(127); // Default angle: do not change
       expect(erp1.getDB(3)).toBe(127); // Default position: do not change
     });

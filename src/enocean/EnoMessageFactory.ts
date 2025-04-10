@@ -137,13 +137,19 @@ export class EnoMessageFactory {
    * Builds a VLD (D2-05) message to control blinds
    * 
    * @param cmd           1 = goto position, 2 = stop, 3 = query position & angle, 4 = replay pos & angle, 5 = set parameter 
-   * @param position      0-100, 127 = do not change
-   * @param angle         0-100, 127 = do not change
+   * @param position      0-100, undefined = do not change
+   * @param angle         0-100, undefined = do not change
    * @returns A ready build ERP1 message
    */
-  static newVldBlindsControlMessage(cmd: number = 1, position: number = 127, angle: number = 127): EnoCore.ERP1Telegram {
+  static newVldBlindsControlMessage(cmd: number = 1, position: number | undefined, angle: number | undefined): EnoCore.ERP1Telegram {
 
     const erp1 = new EnoCore.ERP1Telegram({ rorg: EnoCore.RORGs.VLD, userDataSize: 4 });
+
+    if (cmd === 1) { // goto position
+      if (position === undefined && angle === undefined) {
+        throw new Error('newVldBlindsControlMessage: cmd=1 requires position or angle to be set');
+      }
+    }
 
     const channel = 0x0F; // Channel all
     const lock = 0x00;    // Lock 0 = do not change
@@ -151,10 +157,18 @@ export class EnoMessageFactory {
 
     erp1.setDB(0, (channel & 0x0F) << 4 | (cmd & 0x0F));        // channel & command
     erp1.setDB(1, (repo & 0x07) << 4 | (lock & 0x07));          // repositioning mode & lock
-    erp1.setDB(2, Math.max(0, Math.min(100, angle)));           // slat angle
-    erp1.setDB(3, Math.max(0, Math.min(100, position)));        // blinds position
 
-    // console.log('newVldBlindsControlMessage: ESP3: ', erp1.toESP3Packet().toString());
+    if (angle === undefined) {
+      erp1.setDB(2, 127);                                       // Don't change slat angle
+    } else {
+      erp1.setDB(2, Math.max(0, Math.min(100, angle)));         // slat angle
+    }
+
+    if (position === undefined) {
+      erp1.setDB(3, 127);                                       // Don't change blinds position
+    } else {
+      erp1.setDB(3, Math.max(0, Math.min(100, position)));      // blinds position
+    }
 
     return erp1;
   }
