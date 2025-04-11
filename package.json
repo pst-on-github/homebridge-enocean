@@ -1,7 +1,7 @@
 {
     "name": "@pst-on-npm/homebridge-enocean",
     "displayName": "Homebridge EnOcean",
-    "version": "1.5.0-beta.2",
+    "version": "1.5.0",
     "private": false,
     "description": "Connects EnOcean devices to homebridge.",
     "author": "pst-on-github",
