@@ -22,6 +22,7 @@ jq   # pretty print JSON
 ``` bash
 npm publish --tag=beta --access=public
 npm dist-tag add @pst-on-npm/homebridge-enocean@1.m.b-beta.1 latest
+npm unpublish @pst-on-npm/homebridge-enocean@1.5.0-beta.2 --force
 ```
 
 ## Complex config schemes layout examples
