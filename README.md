@@ -4,7 +4,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/pst-on-github/homebridge-enocean.svg?style=plastic)](https://github.com/pst-on-github/homebridge-enocean)
 [![npm version](https://img.shields.io/npm/v/@pst-on-npm/homebridge-enocean.svg?label=Latest)](https://www.npmjs.com/package/@pst-on-npm/homebridge-enocean)
 [![npm downloads](https://img.shields.io/npm/dt/@pst-on-npm/homebridge-enocean.svg?label=Downloads)](https://www.npmjs.com/package/@pst-on-npm/homebridge-enocean)
-[![verified-by-homebridge](https://badgen.net/badge/Homebridge/verification%20requested/orange)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 
 Integrate EnOcean® devices into Homebridge.
 
