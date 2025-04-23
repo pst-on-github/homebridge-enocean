@@ -87,9 +87,7 @@ export class WindowCoveringAccessory extends EnoTransmittingAccessory implements
   private async targetPosition_onSet(value: CharacteristicValue): Promise<void> {
     this.platform.log.info(`${this.accessory.displayName}: SET targetPosition ${value}`);
 
-    if (value !== this._targetPosition) {
-
-      const cmd = (value as number > this._targetPosition) ? 1 : 2;
+    if (value !== this._targetPosition || value === 100 || value === 0) {
 
       this._targetPosition = value as number;
 
@@ -103,13 +101,16 @@ export class WindowCoveringAccessory extends EnoTransmittingAccessory implements
 
           if (this.config.eepId.rorg === EnoCore.RORGs.FOURBS) {
             // Send Manufacturer specific 4BS message
-            let v = this._travelVelocity;
+            const v = this._travelVelocity;
+            let time_s = Math.abs(this._targetPosition - this._currentPosition) / v;
+            let cmd = this._targetPosition > this._currentPosition? 1: 2;
+
             if (this._targetPosition === 100 || this._targetPosition === 0) {
-              // Reduce the travel velocity by 5 % if targeting the end-points
-              // Results in longer travel time, so the endpoints will securely be reached
-              v *= 0.95;
+              // Special case final positions
+              cmd = (this._targetPosition === 100) ? 1 : 2;
+              time_s = 105 / v;
             }
-            const time_s = Math.abs(this._targetPosition - this._currentPosition) / v;
+
             erp1 = EnoMessageFactory.newFourBSGatewayBlindsMessageEltako(cmd, time_s);
 
           } else if (this.config.eepId.rorg === EnoCore.RORGs.VLD && this.config.eepId.func === 0x05) {
