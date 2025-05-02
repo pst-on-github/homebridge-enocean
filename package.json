@@ -3,7 +3,7 @@
     "displayName": "Homebridge EnOcean",
     "version": "1.5.2-beta.1",
     "private": false,
-    "description": "Connects EnOcean devices to homebridge.",
+    "description": "Integrate EnOcean® devices into Homebridge.",
     "author": "pst-on-github",
     "license": "Apache-2.0",
     "homepage": "https://github.com/pst-on-github/homebridge-enocean#readme",
@@ -15,8 +15,14 @@
         "url": "https://github.com/pst-on-github/homebridge-enocean/issues"
     },
     "keywords": [
+        "homebridge",
+        "enocean",
         "homebridge-plugin",
-        "enocean"
+        "homebridge-platform",
+        "eltako",
+        "tipp-funk",
+        "platform",
+        "tippfunk"
     ],
     "main": "dist/index.js",
     "engines": {
