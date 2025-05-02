@@ -11,6 +11,7 @@ import { EepParser_D1_Eltako } from '../eepParser/EepParser_D1_Eltako';
 import { Util } from '../util';
 import { ParsedMessage } from '../eepParser/ParsedMessage';
 import { EnoMessageFactory } from './EnoMessageFactory';
+import { send } from 'process';
 
 type MessageListener = (eepMessage: ParsedMessage) => void
 
@@ -117,10 +118,6 @@ export class EnoGateway {
     return EnOCore.DeviceId.fromNumber(this._baseId.toNumber() + senderIndex);
   }
 
-  isTeachInMode(): boolean {
-    return this.coreGateway.isLearning;
-  }
-
   /**
    * Gets the index of the sender ID.
    * @param senderId the sender id to get the index for
@@ -139,6 +136,19 @@ export class EnoGateway {
     }
 
     return senderIndex;
+  }
+
+  isLocalSenderId(senderId: EnOCore.DeviceId): boolean {
+    if (this._baseId === undefined) {
+      throw 'coreGateway not initialized. Call start() before calling \'isLocalSenderId\'.';
+    }
+
+    const senderIndex = senderId.toNumber() - this._baseId.toNumber();
+    return senderIndex >= 0 && senderIndex < 128;
+  }
+
+  isTeachInMode(): boolean {
+    return this.coreGateway.isLearning;
   }
 
   /**
@@ -286,11 +296,13 @@ export class EnoGateway {
 
     const link = this._registeredEnoAccessories.get(senderId.toString());
     if (link === undefined) {
-      this._log.warn(`${senderId} no such EnOceanID accessory`);
+      if (!this.isLocalSenderId(senderId)) {    // Detect own send and repeated telegrams
+        this._log.warn(`${senderId} no such EnOceanID accessory`);
 
-      this._registeredEnoAccessories.forEach((value, key) => {
-        this._log.warn(`${key} ${value.config.name}`);
-      });
+        this._registeredEnoAccessories.forEach((value, key) => {
+          this._log.warn(`${key} ${value.config.name}`);
+        });
+      }
 
       return;
     }
@@ -424,6 +436,12 @@ export class EnoGateway {
         const devInfo = this.coreGateway.getDeviceInfo(telegram.sender);
         if (devInfo !== undefined) {
           eepParser.manufacturerId = devInfo.manufacturer;
+        } else if (this.isLocalSenderId(telegram.sender)) {
+          // This is a local sender ID, so we can ignore it
+          const repeatCount = telegram.status & 0x0f;
+
+          this.log.debug(`${srce} ${dest} ${data} -- sender id is a local ID, destination is known (own repeated message, count=${repeatCount}). IGNORED!`);
+          return new ParsedMessage(telegram, eepParser);
         } else {
           // Got this message because the destination is known to us
           // Do not parse in any way
