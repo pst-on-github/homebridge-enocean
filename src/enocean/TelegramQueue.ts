@@ -39,16 +39,21 @@ export class TelegramQueue {
 
   private async sendWithRetries(telegram: EnOCore.ERP1Telegram, maxRetries: number): Promise<void> {
     let attempts = 0;
+    let lastError: Error | null = null;
+
     while (attempts < maxRetries) {
       try {
         await this.sendMethod(telegram);
         return; // Success, exit function
       } catch (error) {
         attempts++;
-        const suffix = attempts<maxRetries? 'Retrying...': 'Giving up.';
-        this.log.warn(`Send attempt ${attempts}/${maxRetries} failed: ${error}. ${suffix}`);
+        this.log.debug(`Send attempt ${attempts}/${maxRetries} failed: ${error}. Retrying...`);
+        lastError = error as Error;
+        await this.randomSleep(50, 100); // Delay between retries
       }
     }
+
+    this.log.warn(`Failed to send telegram ${lastError} after ${maxRetries} retries.`);
   }
 
   private randomSleep(minMs: number, maxMs: number): Promise<void> {
