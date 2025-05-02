@@ -11,7 +11,7 @@ import { EepParser_D1_Eltako } from '../eepParser/EepParser_D1_Eltako';
 import { Util } from '../util';
 import { ParsedMessage } from '../eepParser/ParsedMessage';
 import { EnoMessageFactory } from './EnoMessageFactory';
-import { send } from 'process';
+import { TelegramQueue } from './TelegramQueue';
 
 type MessageListener = (eepMessage: ParsedMessage) => void
 
@@ -40,6 +40,8 @@ export class EnoGateway {
   private _baseId: EnOCore.DeviceId | undefined;
   private _senderIdManager = new SemaphoreManager();
 
+  private readonly _sendQueue: TelegramQueue;
+
   /**
    * Creates an instance of EnoGateway.
    * 
@@ -53,6 +55,11 @@ export class EnoGateway {
   ) {
     this._serialPortPath = serialPortPath;
     this._log = log;
+
+    this._sendQueue = new TelegramQueue(
+      this.sendErp1TelegramIntern.bind(this),
+      this.log,
+    );
 
     // Reserve offset 0 for this gateway
     this._senderIdManager.acquire(0);
@@ -181,18 +188,8 @@ export class EnoGateway {
     this._log.info(message);
   }
 
-  async sendErp1Telegram(telegram: EnOCore.ERP1Telegram): Promise<EnOCore.SendingResults> {
-
-    const result = await this.coreGateway.sendERP1Telegram(telegram);
-    const message = telegram.toESP3Packet().toString();
-
-    if (result === EnOCore.SendingResults.Success) {
-      this.log.debug(`TX: ${message}`);
-    } else {
-      this.log.warn(`Failed to send ERP1 telegram '${message}': ${EnOCore.SendingResults[result]}`);
-    }
-
-    return result;
+  enqueueErp1Telegram(telegram: EnOCore.ERP1Telegram): void {
+    this._sendQueue.enqueue(telegram);
   }
 
   /**
@@ -380,7 +377,7 @@ export class EnoGateway {
             const erp1TeachIn = EnoMessageFactory
               .newFourBSTeachInMessage(
                 info.localId, info.eep, info.manufacturer);
-            this.sendErp1Telegram(erp1TeachIn);
+            this.enqueueErp1Telegram(erp1TeachIn);
           }, 3000);
         }
       }
@@ -460,6 +457,17 @@ export class EnoGateway {
 
         return eepParser.parse(telegram);
       });
+    }
+  }
+
+  private async sendErp1TelegramIntern(telegram: EnOCore.ERP1Telegram): Promise<void> {
+    const result = await this.coreGateway.sendERP1Telegram(telegram);
+    const message = telegram.toESP3Packet().toString();
+
+    if (result === EnOCore.SendingResults.Success) {
+      this.log.debug(`TX: ${message}`);
+    } else {
+      throw `${message}: ${EnOCore.SendingResults[result]}`;
     }
   }
 }

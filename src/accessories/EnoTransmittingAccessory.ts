@@ -82,7 +82,7 @@ export abstract class EnoTransmittingAccessory extends EnoAccessory implements I
     telegram.sender = this._senderId;
     telegram.destination = this.config.devId;
       
-    return this._gateway.sendErp1Telegram(telegram);
+    return this._gateway.enqueueErp1Telegram(telegram);
   }
 
   /**
