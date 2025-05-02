@@ -19,5 +19,5 @@
     "comDevice": "/dev/serial/by-id/usb-EnOcean_GmbH_EnOcean_USB_300_DB_FTO8VWK-if00-port0",
     "isLearnSwitchEnabled": true,
     "isHistoryServiceEnabled": true,
-    "platform": "EnOcean"
+    "platform": "EnOceanPlatform"
 }
