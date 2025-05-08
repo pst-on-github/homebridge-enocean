@@ -48,8 +48,6 @@ export class LightbulbAccessory extends EnoTransmittingAccessory implements IEno
     this._service
       .setCharacteristic(this.hap.Characteristic.Name, accessory.displayName);
 
-    this.accessory.displayName = config.name;
-
     // Each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/Lightbulb
 

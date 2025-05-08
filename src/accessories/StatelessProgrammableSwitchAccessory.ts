@@ -69,9 +69,12 @@ export class StatelessProgrammableSwitchAccessory extends EnoAccessory implement
 
     // Create the four buttons as StatelessProgrammableSwitch services
     for (let i = 0; i < this._buttonSubTypes.length; i++) {
+      const name = config.name + ' ' + this._buttonSubTypes[i];
       const service = accessory.getServiceById(this.platform.Service.StatelessProgrammableSwitch, this._buttonSubTypes[i])
-        || accessory.addService(this.platform.Service.StatelessProgrammableSwitch,
-          config.name + ' ' + this._buttonSubTypes[i], this._buttonSubTypes[i]);
+        || accessory.addService(this.platform.Service.StatelessProgrammableSwitch, name, this._buttonSubTypes[i]);
+      service.displayName = name;
+      service.updateCharacteristic(this.platform.Characteristic.Name, name);
+
       const button = new SwitchButton(platform, service, config, i + 1);
       this._switchButtons.set(this._buttonSubTypes[i], button);
     }

@@ -253,6 +253,8 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       // ---------------------------------------------------------------------
       // Update existing accessory
       // ---------------------------------------------------------------------
+      cachedAccessory.updateDisplayName(deviceConfig.name);
+
       try {
         const device = this.enoAccessoryFactory
           .newAccessory(deviceConfig.eep, this, cachedAccessory as PlatformAccessory<EnoAccessoryContext>, deviceConfig);
@@ -260,8 +262,8 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         if (deviceConfig.localSenderIndex) {
           cachedAccessory.context.localSenderIndex = deviceConfig.localSenderIndex;
         }
-        await device.setGateway(this._enoGateway);
 
+        await device.setGateway(this._enoGateway);
         this.api.updatePlatformAccessories([cachedAccessory]);
         this.log.success(`${cachedAccessory.displayName} (${device.constructor.name}): updated accessory from cache`);
         this.discoveredAccessoriesByUUID.set(uuid, device);
@@ -279,7 +281,8 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       }
 
       try {
-        const device = this.enoAccessoryFactory.newAccessory(deviceConfig.eep, this, accessory, deviceConfig);
+        const device = this.enoAccessoryFactory
+          .newAccessory(deviceConfig.eep, this, accessory, deviceConfig);
 
         await device.setGateway(this._enoGateway);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
@@ -292,10 +295,11 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
       // ---------------------------------------------------------------------
       // Create new accessory received via teach-in telegram
       // ---------------------------------------------------------------------
+      const defaultName = `${EnOCore.Manufacturers[info.manufacturer].replace('_', ' ')}-${Util.getTimeAsFourDigitString()}`;
       deviceConfig = new DeviceConfig(
         info.deviceId.toString(),
         info.eep.toString(),
-        `New ${EnOCore.Manufacturers[info.manufacturer]}`,
+        defaultName.replace(/[_]/g, ' '),
         EnOCore.Manufacturers[info.manufacturer],
       );
       const accessory = new this.api.platformAccessory<EnoAccessoryContext>(deviceConfig.name, uuid);
@@ -331,8 +335,9 @@ export class EnOceanHomebridgePlatform implements DynamicPlatformPlugin {
         throw new Error('Attempt to teach-in a new Eltako device but deviceConfig is undefined');
       }
 
-      const id = Util.getTimeAsFourDigitString();
-      deviceConfig.name = `${EnOCore.Manufacturers[deviceConfig.manufacturerId]}-${deviceConfig.model}-${id}`;
+      const tag = Util.getTimeAsFourDigitString();
+      const defaultName = `${EnOCore.Manufacturers[deviceConfig.manufacturerId]}-${deviceConfig.model}-${tag}`;
+      deviceConfig.name = defaultName.replace(/[_]/g, ' ');
 
       const accessory = new this.api.platformAccessory<EnoAccessoryContext>(deviceConfig.name, uuid);
       accessory.context = new EnoAccessoryContext();
