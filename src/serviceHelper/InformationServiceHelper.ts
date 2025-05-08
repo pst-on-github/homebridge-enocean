@@ -22,6 +22,7 @@ export class InformationServiceHelper {
     // see https://developers.homebridge.io/#/service/AccessoryInformation
 
     const service = accessory.getService(platform.Service.AccessoryInformation)!
+      .setCharacteristic(platform.Characteristic.ConfiguredName, config.name)
       .setCharacteristic(platform.Characteristic.Manufacturer, config.manufacturer)
       .setCharacteristic(platform.Characteristic.Model, config.model)
       .setCharacteristic(platform.Characteristic.SerialNumber, config.devId.toString());
